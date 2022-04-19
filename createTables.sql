@@ -1,6 +1,5 @@
 -- 2018400090 - 2018400150
-CREATE database trial;
-USE trial;
+
 
 -- Create table for database managers.
 CREATE TABLE IF NOT EXISTS Database_Manager
