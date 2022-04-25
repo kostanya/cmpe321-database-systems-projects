@@ -162,8 +162,10 @@ def addCourseWorker(req):
         run_statement(f"INSERT INTO Courses VALUES('{courseid}','{name}','CMPE', 322, NULL,'{quota}','{classroomid}', '{credits}', '{timeslot}','{username}')")
         return HttpResponseRedirect('../instructor/addCourse?success=true')
     except Exception as e:
-        print(str(e))
-        return HttpResponseRedirect('../instructor/addCourse?fail=true')
+        isFailed=req.GET.get("fail",True)
+        isSuccessful=req.GET.get("success",False)
+
+        return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
 
 def addPrerequisite(req):
     isFailed=req.GET.get("fail",False)

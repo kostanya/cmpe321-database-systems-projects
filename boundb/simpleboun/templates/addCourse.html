@@ -15,6 +15,7 @@
         {% if action_fail %}
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading">Course adding failed</h4>
+            <p>{{errormessage}}</p>
         </div>
         {% endif %}
         {% if action_success %}
