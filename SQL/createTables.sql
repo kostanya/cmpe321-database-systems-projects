@@ -3,6 +3,9 @@
  USE SimpleBounDB;
 
 
+-- github push trial from vscode
+
+
 -- Create table for database managers.
 CREATE TABLE IF NOT EXISTS Database_Manager
 (username VARCHAR(50) NOT NULL, 
