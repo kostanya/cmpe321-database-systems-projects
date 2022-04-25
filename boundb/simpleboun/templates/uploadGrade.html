@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  	<title>Instructor: Upload Grade</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <div style="background-color:#ADD8E6; !important" class="jumbotron text-center bg-primary">
+            <h2> Welcome back {{username}}.</h2>
+    </div>
+    <div class="container">
+        {% if action_fail %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Uploading failed</h4>
+            <p>errorr</p>
+        </div>
+        {% endif %}
+        {% if action_success %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Successful</h4>
+            <p>Grade is uploaded successfully.</p>
+        </div>
+        {% endif %}
+        <div class="center">
+            <form id="postform" class="form-group" method="POST" action="{%url 'uploadGradeWorker' %}">
+                    {%csrf_token%}
+                    <br>
+                    <label>Upload Grade:</label>
+                    <br>
+                    <input type="text" name="courseid" placeholder="Course ID" required>
+                    <br>
+                    <input type="text" name="studentid" placeholder="Student ID" required>
+                    <br>
+                    <input type="text" name="grade" placeholder="Grade" required>
+                    <br>
+                    <input type="submit" name="submit" value="Upload">
+                    <br>
+            </form>
+        </div>
+    </div>
+    <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
+</body>
+</html>

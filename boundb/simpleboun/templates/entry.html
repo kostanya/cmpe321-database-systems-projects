@@ -1,0 +1,33 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  	<title>SimpleBoun</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+	<div class="wrapper">
+        <div style="background-color:#ADD8E6; !important" class="jumbotron text-center bg-primary">
+            <h1> Welcome to SimpleBoun.</h1>
+            <p>
+                Please select user type.
+            </p>
+        </div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="d-flex justify-content-around" style="margin-top: 20px">    
+                <a class="btn btn-primary" href="student">Student</a>
+			</div>
+			<div class="d-flex justify-content-around" style="margin-top: 20px">  
+                <a class="btn btn-primary" href="instructor">Instructor</a>
+			</div>
+			<div class="d-flex justify-content-around" style="margin-top: 20px">  
+                <a class="btn btn-primary" href="manager">Manager</a>	         
+			</div>
+		</div>
+	</div>
+</body>
+</html>

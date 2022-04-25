@@ -1,0 +1,9 @@
+DROP TABLE Grades;
+DROP TABLE Prerequisites;
+DROP TABLE Courses;
+DROP TABLE Instructors;
+DROP TABLE Students;
+DROP TABLE Users;
+DROP TABLE Classrooms;
+DROP TABLE Departments;
+DROP TABLE Database_Manager;
