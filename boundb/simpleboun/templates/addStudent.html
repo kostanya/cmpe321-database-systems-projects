@@ -12,41 +12,76 @@
             <h2> Welcome back {{username}}.</h2>
     </div>
     <div class="container">
-        {% if action_fail %}
-        <div class="alert alert-danger" role="alert">
-            <h4 class="alert-heading">Student adding failed</h4>
-            <p>There exists already a student</p>
-        </div>
-        {% endif %}
-        {% if action_success %}
-        <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading">Successful</h4>
-            <p>Student is added successfully.</p>
-        </div>
-        {% endif %}
-        <div class="center">
-            <form id="postform" class="form-group" method="POST" action="{%url 'addStudentWorker' %}">
-                    {%csrf_token%}
-                    <br>
-                    <label>Add New Student:</label>
-                    <br>
-                    <input type="text" name="username" placeholder="Username" required>
-                    <br>
-                    <input type="text" name="name" placeholder="Name" required>
-                    <br>
-                    <input type="text" name="surname" placeholder="Surname" required>
-                    <br>
-                    <input type="text" name="mail" placeholder="Mail" required>
-                    <br>
-                    <input type="text" name="password" placeholder="Password" required>
-                    <br>
-                    <input type="text" name="departmentid" placeholder="Department" required>
-                    <br>
-                    <input type="text" name="studentid" placeholder="Student ID" required>
-                    <br>
-                    <input type="submit" name="submit" value="Add">
-                    <br>
-            </form>
+        <div class="d--flex justify-content-around" style="display:flex;">
+            <div class="container-md">
+                <div class="row">          
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="addStudent">ADD NEW STUDENT</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="addInstructor">ADD NEW INSTRUCTOR</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="deleteStudent">DELETE STUDENT</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="updateTitle">UPDATE INSTRUCTOR TITLE</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewStudents">VIEW ALL STUDENTS</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewInstructors">VIEW ALL INSTRUCTORS</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewGrades">VIEW GRADES OF A STUDENT</a>
+                    </div>  
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewCourses">VIEW COURSES OF A INSTRUCTOR</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewAverage">VIEW AVERAGE GRADE OF A COURSE</a>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                {% if action_fail %}
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Student adding failed</h4>
+                    <p>There exists already a student</p>
+                </div>
+                {% endif %}
+                {% if action_success %}
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">Successful</h4>
+                    <p>Student is added successfully.</p>
+                </div>
+                {% endif %}
+                <div class="center">
+                    <form id="postform" class="form-group" method="POST" action="{%url 'addStudentWorker' %}">
+                            {%csrf_token%}
+                            <br>
+                            <label>Add New Student:</label>
+                            <br>
+                            <input type="text" name="username" placeholder="Username" required>
+                            <br>
+                            <input type="text" name="name" placeholder="Name" required>
+                            <br>
+                            <input type="text" name="surname" placeholder="Surname" required>
+                            <br>
+                            <input type="text" name="mail" placeholder="Mail" required>
+                            <br>
+                            <input type="text" name="password" placeholder="Password" required>
+                            <br>
+                            <input type="text" name="departmentid" placeholder="Department" required>
+                            <br>
+                            <input type="text" name="studentid" placeholder="Student ID" required>
+                            <br>
+                            <input type="submit" name="submit" value="Add">
+                            <br>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>

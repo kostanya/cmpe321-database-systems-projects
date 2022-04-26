@@ -28,7 +28,7 @@ def loginStudent(req):
     username=req.POST["username"]
     password=req.POST["password"]
 
-    result=run_statement(f"SELECT * FROM Users WHERE username='{username}' and password='{hashlib.sha256(password.encode()).hexdigest()}';") 
+    result=run_statement(f"SELECT * FROM Users WHERE username='{username}' and password='{hashlib.sha256(password.encode()).hexdigest()}';")
 
     if result: 
         req.session["username"]=username 
@@ -301,11 +301,14 @@ def deleteStudentWorker(req):
     studentid=req.POST["studentid"]
 
     try:
-        ###SQL
+        run_statement(f"CALL delete_student ('{studentid}');")
         return HttpResponseRedirect("../manager/deleteStudent?success=true")
     except Exception as e:
-        print(str(e))
-        return HttpResponseRedirect('../manager/deleteStudent?fail=true')
+        isFailed=req.GET.get("fail",True)
+        isSuccessful=req.GET.get("success",False)
+        username=req.session["username"]
+        
+        return render(req,'deleteStudent.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
 
 def updateTitle(req):
     isFailed=req.GET.get("fail",False)

@@ -26,33 +26,62 @@
             <h2> Welcome back {{username}}.</h2>
     </div>
     <div class="container">
-        <table class="center">
-            <colgroup>
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-            </colgroup>
-            <tr>
-                <th>Course ID</th>
-                <th>Name</th>
-                <th>Classroom ID</th>
-                <th>Time Slot</th>
-                <th>Quota</th>
-                <th>Prerequisites</th>
-            </tr>
-            {% for row in results %}
-            <tr>
-                {% for value in row %}
-                <td>
-                    {{value}}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="d--flex justify-content-around" style="display:flex;">
+            <div class="container-md">
+                <div class="row">          
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="listClassrooms">LIST AVAILABLE CLASSROOMS</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="addCourse">ADD COURSE</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="addPrerequisite" >ADD PREREQUISITE TO A COURSE</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="viewMyCourses" >LIST MY COURSES</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="listStudents">LIST STUDENTS</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="changeName">CHANGE COURSE NAME</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="uploadGrade">UPLOAD GRADE</a>
+                    </div>  
+                </div>
+            </div>
+            <div class="container-fluid">
+                <table class="center">
+                    <colgroup>
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 15%;">
+                    </colgroup>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Name</th>
+                        <th>Classroom ID</th>
+                        <th>Time Slot</th>
+                        <th>Quota</th>
+                        <th>Prerequisites</th>
+                    </tr>
+                    {% for row in results %}
+                    <tr>
+                        {% for value in row %}
+                        <td>
+                            {{value}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
     </div>
     <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
 </body>

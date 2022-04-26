@@ -26,39 +26,62 @@
             <h2> Welcome back {{username}}.</h2>
     </div>
     <div class="container">
-        <table class="center">
-            <colgroup>
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 15%;">
-            </colgroup>
-            <tr>
-                <th>Course ID</th>
-                <th>Name</th>
-                <th>Instructor Surname</th>
-                <th>Department</th>
-                <th>Credits</th>
-                <th>Classroom ID</th>
-                <th>Time Slot</th>
-                <th>Quota</th>
-                <th>Prerequisites</th>
-            </tr>
-            {% for row in results %}
-            <tr>
-                {% for value in row %}
-                <td>
-                    {{value}}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="d--flex justify-content-around" style="display:flex;">
+            <div class="container-md">
+                <div class="row">          
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="listAllCourses">LIST ALL COURSES</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="enrollCourse">ENROLL COURSE</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="listMyCourses">VIEW MY COURSES</a>
+                    </div>
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="searchKeyword">SEARCH A KEYWORD</a>
+                    </div> 
+                    <div class="d-flex justify-content-around" style="margin-top: 20px">    
+                        <a class="btn btn-primary" href="filterCourses">FILTER COURSES</a>
+                    </div> 
+                </div>
+            </div>
+            <div class="container-fluid">
+                <table>
+                    <colgroup>
+                        <col span="1" style="width: 10%;">
+                        <col span="1" style="width: 30%;">
+                        <col span="1" style="width: 15%;">
+                        <col span="1" style="width: 10%;">
+                        <col span="1" style="width: 5%;">
+                        <col span="1" style="width: 10%;">
+                        <col span="1" style="width: 5%;">
+                        <col span="1" style="width: 5%;">
+                        <col span="1" style="width: 10%;">
+                    </colgroup>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Name</th>
+                        <th>Instructor Surname</th>
+                        <th>Department</th>
+                        <th>Credits</th>
+                        <th>Classroom ID</th>
+                        <th>Time Slot</th>
+                        <th>Quota</th>
+                        <th>Prerequisites</th>
+                    </tr>
+                    {% for row in results %}
+                    <tr>
+                        {% for value in row %}
+                        <td>
+                            {{value}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
     </div>
     <a href="{%url 'index' %}"> <p style="text-align:center">Logout</p></a>
 </body>
