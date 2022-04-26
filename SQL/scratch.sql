@@ -1,5 +1,5 @@
 
-/*  INSERT INTO Database_Manager VALUES("furkan1", "password");
+ /* INSERT INTO Database_Manager VALUES("furkan1", "password");
   INSERT INTO Database_Manager VALUES("furkan2", "password");
   INSERT INTO Database_Manager VALUES("furkan3", "password");
   INSERT INTO Database_Manager VALUES("furkan4", "password");
@@ -25,33 +25,85 @@ INSERT INTO Courses VALUES("CMPE101", "bilgisayara giris", "CMPE", 101, 150, "BM
 -- INSERT INTO prerequisites VALUES("MATH102", "AA100");
 
 INSERT INTO Users VALUES("denemestu", "Adam", "Bokoglu", "email", "pp", "MATH");
-INSERT INTO Students (username, student_id, added_courses) VALUES("denemestu", "2018", '["a","b","c"]');
+INSERT INTO Students (username, student_id) VALUES("denemestu", "2018");
 
-INSERT INTO Grades VALUES(3.5, "2018", "MATH102");
 
 INSERT INTO Users VALUES("denemestu2", "Ugurcan", "Kaka", "email", "ot", "MATH");
-INSERT INTO Students (username, student_id, added_courses) VALUES("denemestu2", "2019", '["a","b","c"]');
+INSERT INTO Students (username, student_id) VALUES("denemestu2", "2019");
 
 INSERT INTO Users VALUES("denemestu4", "Burak", "Yılmaz", "email", "pot", "MATH");
-INSERT INTO Students (username, student_id, added_courses) VALUES("denemestu4", "2015", '["a","b","c"]');
+INSERT INTO Students (username, student_id) VALUES("denemestu4", "2015");
 
 INSERT INTO Users VALUES("denemestu3", "Badana", "Cesur", "email", "pas", "CMPE");
-INSERT INTO Students (username, student_id, added_courses) VALUES("denemestu3", "2003", '["a","b","c"]');
+INSERT INTO Students (username, student_id) VALUES("denemestu3", "2003");
 
+
+INSERT INTO Grades VALUES(3.5, "2018", "MATH102");
 INSERT INTO Grades VALUES(4.0, "2018", "MATH101");
 INSERT INTO Grades VALUES(2.5, "2019", "MATH101");
-INSERT INTO Grades VALUES(3.0, "2015", "MATH102");*/
+INSERT INTO Grades VALUES(3.0, "2015", "MATH102");
+
+INSERT INTO Added_Courses VALUES("2018", "MATH100");
+INSERT INTO Added_Courses VALUES("2019", "MATH100");
+INSERT INTO Added_Courses VALUES("2003", "MATH100");
+INSERT INTO Added_Courses VALUES("2003", "CMPE101");
+INSERT INTO Grades VALUES(3.0, "2018", "CMPE101");
+
+CALL add_course("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
+CALL add_prerequisite("CMPE250", "CMPE101");*/
 
 
 
--- limitation for credit ? 
 
 
 
 
 
 
-/*-- DROP PROCEDURE IF EXISTS add_course;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*-- DROP PROCEDURE IF EXISTS add_course_stu;
+CALL add_course_stu("denemestu3","CMPE101");
+
+
+-- DROP PROCEDURE IF EXISTS view_all_courses;
+CALL view_all_courses();
+
+
+-- DROP PROCEDURE IF EXISTS give_grade;
+CALL give_grade("crazy ins", "MATH100", "2018", "2.5");
+
+
+-- DROP PROCEDURE IF EXISTS update_course_name;
+CALL update_course_name("crazy ins", "MATH100", "introduction to math");
+
+
+-- DROP PROCEDURE IF EXISTS view_my_students;
+CALL view_my_students("cmpe ins", "CMPE101");
+
+
+-- DROP PROCEDURE IF EXISTS view_my_courses_ins;
+CALL view_my_courses_ins("crazy ins");
+
+
+-- DROP PROCEDURE IF EXISTS add_prerequisite;
+CALL add_prerequisite("CMPE250", "CMPE101");
+
+
+-- DROP PROCEDURE IF EXISTS add_course;
 DELETE FROM Courses WHERE course_id = "CMPE250";
 CALL add_course("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
 

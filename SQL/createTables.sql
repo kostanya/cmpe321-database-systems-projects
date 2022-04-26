@@ -51,7 +51,6 @@ FOREIGN KEY (department_id) REFERENCES Departments(department_id) ON UPDATE CASC
 CREATE TABLE IF NOT EXISTS Students
 (username VARCHAR(50) NOT NULL, 
 student_id VARCHAR(50) NOT NULL, 
-added_courses JSON,
 completed_credits INTEGER DEFAULT 0,
 GPA FLOAT(3,2) DEFAULT NULL,
 weightedGrade FLOAT(5,1) DEFAULT 0,
@@ -97,8 +96,20 @@ FOREIGN KEY (prerequisite_id) REFERENCES Courses(course_id),
  -- are prohibited on columns used in CHECK constraints.
  -- Likewise, CHECK constraints are prohibited on columns used in foreign key referential actions.
 CHECK (course_id > prerequisite_id));
- 
- 
+
+
+-- Create table for added courses.
+
+
+CREATE TABLE IF NOT EXISTS Added_Courses
+(student_id VARCHAR(50) NOT NULL,
+course_id VARCHAR(50) NOT NULL,
+PRIMARY KEY (student_id, course_id),
+FOREIGN KEY (student_id) REFERENCES Students(student_id),
+FOREIGN KEY (course_id) REFERENCES Courses(course_id));
+
+
+
 -- Create table for grades.
  
 CREATE TABLE IF NOT EXISTS Grades
@@ -152,6 +163,7 @@ DELIMITER ;
 
 
 
+-- 3
 
 DELIMITER $$  
 CREATE PROCEDURE delete_student (IN input_student_id VARCHAR(50))  
@@ -170,7 +182,7 @@ DELIMITER ;
 
 
 
-
+-- 4
 
 DELIMITER $$  
 CREATE PROCEDURE update_ins_title (IN input_username VARCHAR(50), IN input_title VARCHAR(50))  
@@ -186,7 +198,7 @@ END $$
 DELIMITER ; 
 
 
-
+-- 5
 
 DELIMITER $$  
 CREATE PROCEDURE view_students ()  
@@ -200,7 +212,7 @@ END $$
 DELIMITER ; 
 
 
-
+-- 6
 
 DELIMITER $$  
 CREATE PROCEDURE view_instructors ()  
@@ -213,7 +225,7 @@ END $$
 DELIMITER ; 
 
 
-
+-- 7
 
 DELIMITER $$  
 CREATE PROCEDURE view_student_grades (IN input_student_id VARCHAR(50))  
@@ -232,7 +244,7 @@ DELIMITER ;
 
 
 
-
+-- 8
 
 DELIMITER $$  
 CREATE PROCEDURE view_ins_courses (IN input_ins_username VARCHAR(50))  
@@ -240,10 +252,9 @@ BEGIN
 	IF input_ins_username NOT IN (SELECT instructor_username FROM Courses) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Instructor username is not valid.';
 	ELSE
-		SELECT Courses.course_id, Courses.name AS course_name, Classrooms.classroom_id, campus, time_slot
-		FROM ((Classrooms
-		INNER JOIN Courses ON Classrooms.classroom_id = Courses.classroom_id)
-		INNER JOIN Physical_Locations ON Classrooms.classroom_id = Physical_Locations.classroom_id)
+		SELECT Courses.course_id, Courses.name AS course_name, Physical_Locations.classroom_id, campus, time_slot
+		FROM (Physical_Locations
+		INNER JOIN Courses ON Physical_Locations.classroom_id = Courses.classroom_id)
 		WHERE instructor_username = input_ins_username;    
 	END IF;
 END $$  
@@ -251,6 +262,7 @@ DELIMITER ;
 
 
 
+-- 9
 
 
 DELIMITER $$  
@@ -268,7 +280,7 @@ END $$
 DELIMITER ;
 
 
-
+-- 11
 
 DELIMITER $$  
 CREATE PROCEDURE view_classrooms (IN input_time_slot INT)  
@@ -285,11 +297,10 @@ END $$
 DELIMITER ; 
 
 
-
-
+-- 12
 
 DELIMITER $$  
-CREATE PROCEDURE add_course (IN input_course_id VARCHAR(50),
+CREATE PROCEDURE add_course_ins (IN input_course_id VARCHAR(50),
 IN input_course_name VARCHAR(50), IN input_course_code VARCHAR(50),
 IN input_quota INT, IN input_classroom_id VARCHAR(50), IN input_credits INT,
 IN input_time_slot INT, IN ins_username VARCHAR(50))  
@@ -315,6 +326,168 @@ BEGIN
 	END IF;
 END $$ 
 DELIMITER ;
+
+
+-- 13
+
+DELIMITER $$  
+CREATE PROCEDURE add_prerequisite (IN input_course_id VARCHAR(50), IN input_prerequisite_id VARCHAR(50))  
+BEGIN  
+	INSERT INTO prerequisites VALUES(input_course_id, input_prerequisite_id);
+END $$  
+DELIMITER ;
+
+
+-- 14
+
+
+DELIMITER $$  
+CREATE PROCEDURE view_my_courses_ins (IN ins_username VARCHAR(50))  
+BEGIN  
+	SELECT Courses.course_id, Courses.name AS course_name, Courses.classroom_id, time_slot, quota,
+    GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
+	FROM ((Physical_Locations
+	INNER JOIN Courses ON Physical_Locations.classroom_id = Courses.classroom_id)
+    LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
+	WHERE instructor_username = ins_username
+    GROUP BY Courses.course_id
+    ORDER BY Courses.course_id ASC;
+END $$  
+DELIMITER ; 
+
+
+
+-- 15
+
+DELIMITER $$  
+CREATE PROCEDURE view_my_students (IN ins_username VARCHAR(50), IN input_course_id VARCHAR(50))  
+BEGIN  
+	IF input_course_id NOT IN (SELECT course_id FROM Courses WHERE instructor_username = ins_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course ID is not valid.';	-- This course does not belong to you or does not exist.
+	ELSE
+		SELECT Users.username, Students.student_id, email, Users.name, surname
+        FROM (((Users
+        INNER JOIN Students ON Users.username = Students.username)
+        INNER JOIN Added_Courses ON Students.student_id = Added_courses.student_id)
+        INNER JOIN Courses ON Courses.course_id = Added_courses.course_id)
+        WHERE instructor_username = ins_username and Courses.course_id = input_course_id;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
+-- 16
+
+
+DELIMITER $$  
+CREATE PROCEDURE update_course_name (IN ins_username VARCHAR(50), IN input_course_id VARCHAR(50), IN input_course_name VARCHAR(50))  
+BEGIN  
+	IF input_course_id NOT IN (SELECT course_id FROM Courses WHERE instructor_username = ins_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course ID is not valid.';	-- This course does not belong to you or does not exist.
+	ELSE
+		UPDATE Courses
+        SET Courses.name = input_course_name
+        WHERE course_id = input_course_id;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
+-- 17
+
+
+DELIMITER $$  
+CREATE PROCEDURE give_grade (IN ins_username VARCHAR(50), IN input_course_id VARCHAR(50),
+IN input_student_id VARCHAR(50), IN input_grade FLOAT(2,1))  
+BEGIN  
+	IF input_student_id NOT IN (SELECT student_id 
+								FROM Added_Courses 
+                                INNER JOIN Courses 
+                                ON Added_Courses.course_id = Courses.course_id
+                                WHERE instructor_username = ins_username
+                                AND Courses.course_id = input_course_id) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student ID or Course ID is not valid.';
+	ELSE 
+		INSERT INTO Grades VALUES(input_grade, input_student_id, input_course_id);
+        DELETE FROM Added_Courses
+        WHERE student_id = input_student_id 
+        AND course_id = input_course_id;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
+-- 18
+
+
+DELIMITER $$  
+CREATE PROCEDURE view_all_courses ()  
+BEGIN  
+	SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
+	Departments.department_name, credits, classroom_id, time_slot, quota,
+    GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
+	FROM ((((Users
+	INNER JOIN Instructors ON Users.username = Instructors.username)
+	INNER JOIN Departments ON Users.department_id = Departments.department_id)
+    INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+    LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
+    GROUP BY Courses.course_id
+    ORDER BY Courses.course_id ASC;
+END $$  
+DELIMITER ; 
+
+
+-- 19
+
+
+DELIMITER $$  
+CREATE PROCEDURE add_course_stu (IN stu_username VARCHAR(50), IN input_course_id VARCHAR(50))  
+BEGIN 
+	DECLARE stu_id VARCHAR(50);
+    DECLARE cnt_pre INT;
+    DECLARE cnt_join INT;
+    DECLARE cnt_enrolled INT;
+    DECLARE course_quota INT;
+    
+	SELECT student_id FROM Students WHERE username = stu_username INTO stu_id;
+    
+    SELECT count(*)
+    FROM (SELECT prerequisite_id FROM prerequisites WHERE course_id = input_course_id) AS x
+    INTO cnt_pre;
+    
+    SELECT count(*)
+    FROM (SELECT prerequisite_id FROM prerequisites WHERE course_id = input_course_id) AS x 
+		INNER JOIN (SELECT course_id
+					FROM Grades
+                    WHERE student_id = stu_id ) AS y
+		ON x.prerequisite_id = y.course_id
+    INTO cnt_join;
+    
+    SELECT count(*) FROM Added_Courses WHERE course_id = input_course_id INTO cnt_enrolled;
+    SELECT quota FROM Courses WHERE course_id = input_course_id INTO course_quota;
+    
+    IF input_course_id NOT IN (SELECT course_id FROM Courses) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course ID is not valid.';
+	ELSEIF input_course_id IN (SELECT course_id
+							FROM Grades
+                            WHERE student_id = stu_id) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You cannot take this course again.';
+	ELSEIF cnt_pre != cnt_join THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You do not meet the prerequisites.';
+	ELSEIF cnt_enrolled >= course_quota THEN  -- just to be sure
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You cannot add the course due to quota restrictions.';
+	ELSE
+		INSERT INTO Added_Courses VALUES(stu_id, input_course_id);
+	END IF;
+END $$  
+DELIMITER ;
+
+
+
+
+
+
+
 
 
 

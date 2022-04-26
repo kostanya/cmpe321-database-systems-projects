@@ -2,10 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
 from .db_utils import run_statement
-<<<<<<< HEAD
 import hashlib
-=======
->>>>>>> 38f1ff940b5463dcb80ab7df5652656d3beba26b
 
 def index(req):
     if req.session:
@@ -14,11 +11,7 @@ def index(req):
 
 def student(req):
     isFailed=req.GET.get("fail",False) 
-<<<<<<< HEAD
-    loginForm=UserLoginForm() #use django form object to create a blank form for the html page
-=======
     loginForm=UserLoginForm() 
->>>>>>> 38f1ff940b5463dcb80ab7df5652656d3beba26b
     return render(req,'loginIndexStudent.html',{"login_form":loginForm,"action_fail":isFailed})
 
 def instructor(req):
@@ -35,11 +28,7 @@ def loginStudent(req):
     username=req.POST["username"]
     password=req.POST["password"]
 
-<<<<<<< HEAD
     result=run_statement(f"SELECT * FROM Users WHERE username='{username}' and password='{hashlib.sha256(password.encode()).hexdigest()}';") 
-=======
-    result=run_statement(f"SELECT * FROM Users WHERE username='{username}' and password='{password}';") 
->>>>>>> 38f1ff940b5463dcb80ab7df5652656d3beba26b
 
     if result: 
         req.session["username"]=username 
