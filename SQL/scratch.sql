@@ -1,61 +1,41 @@
+CALL add_dbm ("furkan1", "password");
+CALL add_dbm ("furkan2", "password");
+CALL add_dbm ("furkan3", "password");
+CALL add_dbm ("furkan4", "password");
 
- /*INSERT INTO Database_Manager VALUES("furkan1", "password");
-  INSERT INTO Database_Manager VALUES("furkan2", "password");
-  INSERT INTO Database_Manager VALUES("furkan3", "password");
-  INSERT INTO Database_Manager VALUES("furkan4", "password");
-
- INSERT INTO Departments VALUES("MATH", "Matematik");
- INSERT INTO Users VALUES("crazy ins", "Berke", "Bok", "email", "passsss", "MATH");
- INSERT INTO Instructors VALUES("crazy ins", "Professor");
- 
+INSERT INTO Departments VALUES("MATH", "Matematik");
+INSERT INTO Departments VALUES("CMPE", "Bilgisayar");
+  
 INSERT INTO Classrooms VALUES("BMA2");
 INSERT INTO Physical_Locations VALUES("BMA2", 200, "North");
-
-
-INSERT INTO Classrooms VALUES("NH303");
-INSERT INTO Physical_Locations VALUES("NH303", 2, "South");
-
+INSERT INTO Classrooms VALUES("KB500");
+INSERT INTO Physical_Locations VALUES("KB500", 2, "South");
 INSERT INTO Classrooms VALUES("NH103");
 INSERT INTO Physical_Locations VALUES("NH103", 20, "South");
 
+CALL add_ins ("crazy ins", "Berke", "Bok", "email", "pass", "MATH", "Professor");
+CALL add_ins ("cmpe ins", "Berke", "Bok", "email", "pas", "CMPE", "Professor");
 
- INSERT INTO Departments VALUES("CMPE", "Bilgisayar");
- INSERT INTO Users VALUES("cmpe ins", "Berke", "Bok", "email", "pas", "CMPE");
- INSERT INTO Instructors VALUES("cmpe ins", "Professor");
+CALL add_student("denemestu", "Adam", "Bokoglu", "email", "pp", "MATH", "2018");
+CALL add_student("denemestu2", "Ugurcan", "Kaka", "email", "ot", "MATH", "2019");
+CALL add_student("denemestu3", "Badana", "Cesur", "email", "pas", "CMPE", "2003");
+CALL add_student("denemestu4", "Burak", "Yılmaz", "email", "pot", "MATH", "2015");
+
+
 INSERT INTO Courses VALUES("CMPE101", "bilgisayara giris", "CMPE", 101, 150, "BMA2", 3, 1, "cmpe ins");
+INSERT INTO Courses VALUES("MATH101", "kurs ismi", "MATH", 101, 150, "BMA2", 4, 7, "crazy ins");
+INSERT INTO Courses VALUES("MATH100", "başka kurs", "MATH", 100, 150, "BMA2", 4, 9, "crazy ins");
+INSERT INTO Courses VALUES("MATH102", "bambaşka kurs", "MATH", 102, 150, "BMA2", 4, 10, "crazy ins");
 
- INSERT INTO Courses VALUES("MATH101", "kurs ismi", "MATH", 101, 150, "BMA2", 4, 7, "crazy ins");
- INSERT INTO Courses VALUES("MATH100", "başka kurs", "MATH", 100, 150, "BMA2", 4, 9, "crazy ins");
- INSERT INTO Courses VALUES("MATH102", "bambaşka kurs", "MATH", 102, 150, "BMA2", 4, 10, "crazy ins");
-
- INSERT INTO prerequisites VALUES("MATH102", "MATH101");
- INSERT INTO prerequisites VALUES("MATH102", "MATH100");
--- INSERT INTO prerequisites VALUES("MATH102", "AA100");
-
-INSERT INTO Users VALUES("denemestu", "Adam", "Bokoglu", "email", "pp", "MATH");
-INSERT INTO Students (username, student_id) VALUES("denemestu", "2018");
-
-
-INSERT INTO Users VALUES("denemestu2", "Ugurcan", "Kaka", "email", "ot", "MATH");
-INSERT INTO Students (username, student_id) VALUES("denemestu2", "2019");
-
-INSERT INTO Users VALUES("denemestu4", "Burak", "Yılmaz", "email", "pot", "MATH");
-INSERT INTO Students (username, student_id) VALUES("denemestu4", "2015");
-
-INSERT INTO Users VALUES("denemestu3", "Badana", "Cesur", "email", "pas", "CMPE");
-INSERT INTO Students (username, student_id) VALUES("denemestu3", "2003");
-
-
-
+INSERT INTO prerequisites VALUES("MATH102", "MATH101");
+INSERT INTO prerequisites VALUES("MATH102", "MATH100");
 
 CALL add_course_ins("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
 CALL add_prerequisite("CMPE250", "CMPE101");
 
-
 CALL add_course_ins("CMPE350", "kors neym", "300", "250", "BMA2", "4", "5", "cmpe ins");
 CALL add_course_ins("MATH200", "mat 200", "200", "200", "BMA2", "4", "6", "crazy ins");
-CALL add_course_ins("CMPE350", "kors neym", "350", "2", "NH303", "3", "1", "cmpe ins");
-
+CALL add_course_ins("CMPE350", "kors neym", "350", "2", "KB500", "3", "1", "cmpe ins");
 
 CALL add_course_stu("denemestu3", "MATH100");
 CALL add_course_stu("denemestu3", "MATH101");
@@ -72,15 +52,11 @@ CALL add_course_stu("denemestu3", "CMPE350");
 CALL add_course_stu("denemestu2", "CMPE350");
 CALL add_course_stu("denemestu", "CMPE350");
 
-
-
-
 CALL give_grade("crazy ins", "MATH100", "2003", "3");
 CALL give_grade("crazy ins", "MATH101", "2003", "3.5");
 CALL give_grade("crazy ins", "MATH100", "2018", "2.5");
 CALL give_grade("cmpe ins", "CMPE101", "2019", "1.5");
-CALL give_grade("cmpe ins", "CMPE101", "2015", "4");*/
-
+CALL give_grade("cmpe ins", "CMPE101", "2015", "4");
 
 
 

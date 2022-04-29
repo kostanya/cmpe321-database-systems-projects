@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from .forms import *
 from .db_utils import run_statement
-import hashlib
 import re
 
 def index(req):
@@ -30,8 +29,7 @@ def loginStudent(req):
     password=req.POST["password"]
 
     try:
-        result=run_statement(f"CALL login_student('{username}','{hashlib.sha256(password.encode()).hexdigest()}')")
-        #result=run_statement(f"CALL login_student('{username}','{password}')")
+        result=run_statement(f"CALL login_student('{username}','{password}')")
 
         if result: 
             req.session["username"]=username 
@@ -45,8 +43,7 @@ def loginInstructor(req):
     username=req.POST["username"]
     password=req.POST["password"]
     try: 
-        result=run_statement(f"CALL login_ins('{username}','{hashlib.sha256(password.encode()).hexdigest()}')")
-        #result=run_statement(f"CALL login_ins('{username}','{password}')")
+        result=run_statement(f"CALL login_ins('{username}','{password}')")
 
         if result: 
             req.session["username"]=username 
@@ -56,18 +53,19 @@ def loginInstructor(req):
     except Exception as e:
         return HttpResponseRedirect('../simpleboun/instructor?fail=true')
         
-
 def loginManager(req):
     username=req.POST["username"]
     password=req.POST["password"]
 
-    result=run_statement(f"SELECT * FROM Database_Manager WHERE username='{username}' and password='{hashlib.sha256(password.encode()).hexdigest()}';") 
-    #result=run_statement(f"SELECT * FROM Database_Manager WHERE username='{username}' and password='{password}';") 
-
-    if result: 
-        req.session["username"]=username 
-        return HttpResponseRedirect('../simpleboun/manager/home') 
-    else:
+    try: 
+        result=run_statement(f"CALL login_dbm('{username}','{password}')")
+        
+        if result: 
+            req.session["username"]=username 
+            return HttpResponseRedirect('../simpleboun/manager/home') 
+        else:
+            return HttpResponseRedirect('../simpleboun/manager?fail=true')
+    except Exception as e:
         return HttpResponseRedirect('../simpleboun/manager?fail=true')
 
 def studentHome(req):

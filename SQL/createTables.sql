@@ -183,6 +183,18 @@ DELIMITER ;
 
 -- 2
 
+DELIMITER $$  
+CREATE PROCEDURE login_dbm (IN dbm_username VARCHAR(50), IN input_password VARCHAR(256))  
+BEGIN  
+	IF dbm_username NOT IN (SELECT username FROM Database_Manager WHERE username = dbm_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is not valid.';
+	ELSE
+		SELECT * FROM Database_Manager WHERE username = dbm_username and password = SHA2(input_password, 256) ;
+	END IF;
+END $$ 
+DELIMITER ;
+
+
 
 DELIMITER $$  
 CREATE PROCEDURE login_student (IN stu_username VARCHAR(50), IN input_password VARCHAR(256))  
@@ -190,7 +202,7 @@ BEGIN
 	IF stu_username NOT IN (SELECT username FROM Students WHERE username = stu_username) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is not valid.';
 	ELSE
-		SELECT * FROM Users WHERE username= stu_username and password = input_password ;
+		SELECT * FROM Users WHERE username = stu_username and password = SHA2(input_password, 256) ;
 	END IF;
 END $$ 
 DELIMITER ;
@@ -201,7 +213,7 @@ BEGIN
 	IF ins_username NOT IN (SELECT username FROM Instructors WHERE username = ins_username) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is not valid.';
 	ELSE
-		SELECT * FROM Users WHERE username= ins_username and password = input_password ;
+		SELECT * FROM Users WHERE username = ins_username and password = SHA2(input_password, 256) ;
 	END IF;
 END $$ 
 DELIMITER ;
@@ -230,7 +242,7 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE update_ins_title (IN input_username VARCHAR(50), IN input_title VARCHAR(50))  
 BEGIN 
-	DECLARE message VARCHAR(50);
+	DECLARE message VARCHAR(100);
 	IF input_username NOT IN (SELECT username FROM Instructors) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Instructor username is not valid.';
 	ELSEIF STRCMP(input_title, 'Assistant Professor') AND STRCMP(input_title, 'Associate Professor') AND STRCMP(input_title, 'Professor') THEN
@@ -331,6 +343,20 @@ DELIMITER ;
 -- 10
 
 DELIMITER $$  
+CREATE PROCEDURE add_dbm (IN input_dbm_username VARCHAR(50), IN input_password VARCHAR(256))  
+BEGIN     
+    IF input_dbm_username IN (SELECT username FROM Database_Manager WHERE username = input_dbm_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is already taken.';
+	ELSE
+		INSERT INTO Database_Manager VALUES(input_dbm_username, SHA2(input_password, 256));
+	END IF;
+END $$  
+DELIMITER ;
+
+
+
+
+DELIMITER $$  
 CREATE PROCEDURE add_student (IN input_stu_username VARCHAR(50),IN input_stu_name VARCHAR(50),
 IN input_stu_surname VARCHAR(50),IN input_mail VARCHAR(50), IN input_password VARCHAR(256),
 IN input_dep_id VARCHAR(50), IN input_stu_id VARCHAR(50))  
@@ -344,14 +370,12 @@ BEGIN
 	ELSEIF input_stu_id IN (SELECT student_id FROM Students WHERE student_id = input_stu_id)THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student ID is already taken.';
 	ELSE
-		INSERT INTO Users VALUES(input_stu_username, input_stu_name, input_stu_surname, input_mail, input_password,input_dep_id);
+		INSERT INTO Users VALUES(input_stu_username, input_stu_name, input_stu_surname, input_mail, SHA2(input_password, 256), input_dep_id);
         INSERT INTO Students(username, student_id) VALUES(input_stu_username, input_stu_id);
 	END IF;
 END $$  
 DELIMITER ;
 
-
--- 10
 
 
 DELIMITER $$  
@@ -368,7 +392,7 @@ BEGIN
     ELSEIF STRCMP(input_title, 'Assistant Professor') AND STRCMP(input_title, 'Associate Professor') AND STRCMP(input_title, 'Professor') THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Title is not valid.';
 	ELSE
-		INSERT INTO Users VALUES(input_ins_username, input_ins_name, input_ins_surname, input_mail, input_password, input_dep_id);
+		INSERT INTO Users VALUES(input_ins_username, input_ins_name, input_ins_surname, input_mail, SHA2(input_password, 256), input_dep_id);
         INSERT INTO Instructors VALUES(input_ins_username, input_title);
 	END IF;
 END $$  
