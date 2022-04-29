@@ -1,5 +1,5 @@
 
- /* INSERT INTO Database_Manager VALUES("furkan1", "password");
+ /*INSERT INTO Database_Manager VALUES("furkan1", "password");
   INSERT INTO Database_Manager VALUES("furkan2", "password");
   INSERT INTO Database_Manager VALUES("furkan3", "password");
   INSERT INTO Database_Manager VALUES("furkan4", "password");
@@ -7,9 +7,17 @@
  INSERT INTO Departments VALUES("MATH", "Matematik");
  INSERT INTO Users VALUES("crazy ins", "Berke", "Bok", "email", "passsss", "MATH");
  INSERT INTO Instructors VALUES("crazy ins", "Professor");
+ 
 INSERT INTO Classrooms VALUES("BMA2");
-
 INSERT INTO Physical_Locations VALUES("BMA2", 200, "North");
+
+
+INSERT INTO Classrooms VALUES("NH303");
+INSERT INTO Physical_Locations VALUES("NH303", 2, "South");
+
+INSERT INTO Classrooms VALUES("NH103");
+INSERT INTO Physical_Locations VALUES("NH103", 20, "South");
+
 
  INSERT INTO Departments VALUES("CMPE", "Bilgisayar");
  INSERT INTO Users VALUES("cmpe ins", "Berke", "Bok", "email", "pas", "CMPE");
@@ -38,44 +46,79 @@ INSERT INTO Users VALUES("denemestu3", "Badana", "Cesur", "email", "pas", "CMPE"
 INSERT INTO Students (username, student_id) VALUES("denemestu3", "2003");
 
 
-INSERT INTO Grades VALUES(3.5, "2018", "MATH102");
-INSERT INTO Grades VALUES(4.0, "2018", "MATH101");
-INSERT INTO Grades VALUES(2.5, "2019", "MATH101");
-INSERT INTO Grades VALUES(3.0, "2015", "MATH102");
-
-INSERT INTO Added_Courses VALUES("2018", "MATH100");
-INSERT INTO Added_Courses VALUES("2019", "MATH100");
-INSERT INTO Added_Courses VALUES("2003", "MATH100");
-INSERT INTO Added_Courses VALUES("2003", "CMPE101");
-INSERT INTO Grades VALUES(3.0, "2018", "CMPE101");
-
-CALL add_course("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
-CALL add_prerequisite("CMPE250", "CMPE101");*/
 
 
+CALL add_course_ins("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
+CALL add_prerequisite("CMPE250", "CMPE101");
 
 
+CALL add_course_ins("CMPE350", "kors neym", "300", "250", "BMA2", "4", "5", "cmpe ins");
+CALL add_course_ins("MATH200", "mat 200", "200", "200", "BMA2", "4", "6", "crazy ins");
+CALL add_course_ins("CMPE350", "kors neym", "350", "2", "NH303", "3", "1", "cmpe ins");
 
 
-
-
-
-
-
-
-
-
+CALL add_course_stu("denemestu3", "MATH100");
+CALL add_course_stu("denemestu3", "MATH101");
+CALL add_course_stu("denemestu3", "MATH102");
+CALL add_course_stu("denemestu2", "MATH100");
+CALL add_course_stu("denemestu2", "MATH101");
+CALL add_course_stu("denemestu2", "CMPE101");
+CALL add_course_stu("denemestu", "MATH100");
+CALL add_course_stu("denemestu", "CMPE101");
+CALL add_course_stu("denemestu", "CMPE250");
+CALL add_course_stu("denemestu4", "CMPE101");
+CALL add_course_stu("denemestu4", "CMPE250");
+CALL add_course_stu("denemestu3", "CMPE350");
+CALL add_course_stu("denemestu2", "CMPE350");
+CALL add_course_stu("denemestu", "CMPE350");
 
 
 
 
+CALL give_grade("crazy ins", "MATH100", "2003", "3");
+CALL give_grade("crazy ins", "MATH101", "2003", "3.5");
+CALL give_grade("crazy ins", "MATH100", "2018", "2.5");
+CALL give_grade("cmpe ins", "CMPE101", "2019", "1.5");
+CALL give_grade("cmpe ins", "CMPE101", "2015", "4");*/
 
 
 
 
 
 
-/*-- DROP PROCEDURE IF EXISTS add_course_stu;
+/* -- DROP PROCEDURE IF EXISTS add_ins;
+CALL add_ins("mathins6", "math","ins","mail","pas","MATH", "Professor" );
+
+
+ -- DROP PROCEDURE IF EXISTS add_student;
+CALL add_student("denemestu7", "deneme","stu","mail","pp","CMPE", "2007" );
+
+
+-- DROP PROCEDURE IF EXISTS login_ins;
+CALL login_ins("cmpe ins", "pas");
+
+
+-- DROP PROCEDURE IF EXISTS login_student;
+CALL login_student("denemestu", "pp");
+
+
+-- DROP PROCEDURE IF EXISTS filter_course;
+call filter_course("math", "north", 3,4);
+
+
+-- DROP PROCEDURE IF EXISTS search_keyword;
+CALL search_keyword("ku");
+
+
+-- DROP PROCEDURE IF EXISTS view_my_courses_stu;
+CALL view_my_courses_stu("denemestu3");
+
+
+-- DROP PROCEDURE IF EXISTS view_my_courses_stu;
+CALL view_my_courses_stu("denemestu2");
+
+
+-- DROP PROCEDURE IF EXISTS add_course_stu;
 CALL add_course_stu("denemestu3","CMPE101");
 
 
@@ -109,7 +152,7 @@ CALL add_course("CMPE250", "Algoritma", "250", "100", "BMA2", 3, 2, "cmpe ins");
 
 
 -- DROP PROCEDURE IF EXISTS view_classrooms;
-CALL view_classrooms (9);
+CALL view_classrooms("9");
 
 
 -- DROP PROCEDURE IF EXISTS delete_student;

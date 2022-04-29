@@ -58,11 +58,12 @@
                     </div>
                 </div>
             </div>
+            &nbsp;
             <div class="container-fluid">
                 {% if action_fail %}
                 <div class="alert alert-danger" role="alert">
-                    <h4 class="alert-heading">failed</h4>
-                    <p>student does not exist</p>
+                    <h4 class="alert-heading">Failed</h4>
+                    <p>{{errormessage}}</p>
                 </div>
                 {% endif %}
                 <div class="container">

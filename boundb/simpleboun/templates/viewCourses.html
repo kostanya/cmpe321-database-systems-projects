@@ -58,11 +58,12 @@
                     </div>
                 </div>
             </div>
+            &nbsp; 
             <div class="container-fluid">
                 {% if action_fail %}
                 <div class="alert alert-danger" role="alert">
-                    <h4 class="alert-heading">failed</h4>
-                    <p>instructor does not exist</p>
+                    <h4 class="alert-heading">Failed</h4>
+                    <p>{{errormessage}}</p>
                 </div>
                 {% endif %}
                 <div class="container">
@@ -96,7 +97,7 @@
                     <form id="postform" class="form-group" method="POST" action="{%url 'viewCoursesWorker' %}">
                             {%csrf_token%}
                             <br>
-                            <label>View Courses:</label>
+                            <label>View Courses of Instructor:</label>
                             <br>
                             <input type="text" name="instructor_username" placeholder="Username" required>
                             <br>

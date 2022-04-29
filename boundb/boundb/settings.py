@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'SimpleBounDB', #case INSENSITIVE
         'USER': 'root',
-        'PASSWORD': getpass(), #erk123H
+        'PASSWORD': 'erk123H', #erk123H
         'HOST': 'localhost',
     }
 }

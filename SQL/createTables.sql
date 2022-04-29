@@ -1,10 +1,7 @@
 -- 2018400090 - 2018400150
  CREATE database SimpleBounDB;
  USE SimpleBounDB;
-
-
--- github push trial from vscode
-
+ 
 
 -- Create table for database managers.
 CREATE TABLE IF NOT EXISTS Database_Manager
@@ -162,6 +159,52 @@ END$$
 DELIMITER ;
 
 
+-- Create trigger to prevent an instructor from adding a course whose quota is larger than the classrom capacity.
+
+
+
+DELIMITER $$
+CREATE TRIGGER limitQuota
+BEFORE INSERT
+ON Courses
+FOR EACH ROW
+BEGIN
+	DECLARE capacity INT;
+   
+    SELECT classroom_capacity FROM Physical_Locations
+    WHERE classroom_id = new.classroom_id
+    INTO capacity;
+    
+    IF capacity < new.quota THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course quota can not be greater than the capacity of the classroom.';
+	END IF;	
+END$$
+DELIMITER ;
+
+-- 2
+
+
+DELIMITER $$  
+CREATE PROCEDURE login_student (IN stu_username VARCHAR(50), IN input_password VARCHAR(256))  
+BEGIN  
+	IF stu_username NOT IN (SELECT username FROM Students WHERE username = stu_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is not valid.';
+	ELSE
+		SELECT * FROM Users WHERE username= stu_username and password = input_password ;
+	END IF;
+END $$ 
+DELIMITER ;
+
+DELIMITER $$  
+CREATE PROCEDURE login_ins (IN ins_username VARCHAR(50), IN input_password VARCHAR(256))  
+BEGIN  
+	IF ins_username NOT IN (SELECT username FROM Instructors WHERE username = ins_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is not valid.';
+	ELSE
+		SELECT * FROM Users WHERE username= ins_username and password = input_password ;
+	END IF;
+END $$ 
+DELIMITER ;
 
 -- 3
 
@@ -187,8 +230,14 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE update_ins_title (IN input_username VARCHAR(50), IN input_title VARCHAR(50))  
 BEGIN 
+	DECLARE message VARCHAR(50);
 	IF input_username NOT IN (SELECT username FROM Instructors) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Instructor username is not valid.';
+	ELSEIF STRCMP(input_title, 'Assistant Professor') AND STRCMP(input_title, 'Associate Professor') AND STRCMP(input_title, 'Professor') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Title is not valid.';
+    ELSEIF NOT STRCMP(input_title, (SELECT title FROM Instructors WHERE username = input_username)) THEN
+		SET message =  CONCAT ('Title of the instructor is already ', input_title, '.');
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = message;
 	ELSE
 		UPDATE Instructors 
 		SET title = input_title
@@ -279,6 +328,52 @@ BEGIN
 END $$ 
 DELIMITER ;
 
+-- 10
+
+DELIMITER $$  
+CREATE PROCEDURE add_student (IN input_stu_username VARCHAR(50),IN input_stu_name VARCHAR(50),
+IN input_stu_surname VARCHAR(50),IN input_mail VARCHAR(50), IN input_password VARCHAR(256),
+IN input_dep_id VARCHAR(50), IN input_stu_id VARCHAR(50))  
+BEGIN     
+    IF input_stu_username IN (SELECT username FROM Users WHERE username = input_stu_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is already taken.';
+	ELSEIF input_dep_id NOT IN (SELECT department_id
+							FROM Departments
+                            WHERE department_id = input_dep_id) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department ID is not valid.';
+	ELSEIF input_stu_id IN (SELECT student_id FROM Students WHERE student_id = input_stu_id)THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student ID is already taken.';
+	ELSE
+		INSERT INTO Users VALUES(input_stu_username, input_stu_name, input_stu_surname, input_mail, input_password,input_dep_id);
+        INSERT INTO Students(username, student_id) VALUES(input_stu_username, input_stu_id);
+	END IF;
+END $$  
+DELIMITER ;
+
+
+-- 10
+
+
+DELIMITER $$  
+CREATE PROCEDURE add_ins (IN input_ins_username VARCHAR(50),IN input_ins_name VARCHAR(50),
+IN input_ins_surname VARCHAR(50),IN input_mail VARCHAR(50), IN input_password VARCHAR(256),
+IN input_dep_id VARCHAR(50), IN input_title VARCHAR(50))  
+BEGIN     
+    IF input_ins_username IN (SELECT username FROM Users WHERE username = input_ins_username) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Username is already taken.';
+	ELSEIF input_dep_id NOT IN (SELECT department_id
+							FROM Departments
+                            WHERE department_id = input_dep_id) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department ID is not valid.';
+    ELSEIF STRCMP(input_title, 'Assistant Professor') AND STRCMP(input_title, 'Associate Professor') AND STRCMP(input_title, 'Professor') THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Title is not valid.';
+	ELSE
+		INSERT INTO Users VALUES(input_ins_username, input_ins_name, input_ins_surname, input_mail, input_password, input_dep_id);
+        INSERT INTO Instructors VALUES(input_ins_username, input_title);
+	END IF;
+END $$  
+DELIMITER ;
+
 
 -- 11
 
@@ -288,10 +383,10 @@ BEGIN
 	IF (input_time_slot>=11 OR input_time_slot<=0) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Time slot is not valid.';
 	ELSE
-		SELECT Physical_Locations.classroom_id, campus, classroom_capacity
-		FROM Physical_Locations
-		INNER JOIN Courses
-		WHERE time_slot = input_time_slot;
+		SELECT * FROM Physical_Locations WHERE classroom_id NOT IN 
+		(SELECT classroom_id
+		FROM Courses
+		WHERE time_slot = input_time_slot);
 	END IF;
 END $$  
 DELIMITER ; 
@@ -306,15 +401,7 @@ IN input_quota INT, IN input_classroom_id VARCHAR(50), IN input_credits INT,
 IN input_time_slot INT, IN ins_username VARCHAR(50))  
 BEGIN  
 	DECLARE dep_id VARCHAR(50);
-	DECLARE capacity INT;
-	SELECT classroom_capacity 
-    FROM Physical_Locations
-    WHERE classroom_id = input_classroom_id
-    INTO capacity;
-    IF capacity < input_quota THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course quota can not be greater than the capacity of the classroom.';
-	ELSE
-		SELECT department_id
+    SELECT department_id
 		FROM Users
 		INNER JOIN Instructors
 		ON Users.username = Instructors.username
@@ -323,7 +410,7 @@ BEGIN
 		INSERT INTO Courses VALUES(input_course_id, input_course_name, dep_id,
 								input_course_code, input_quota, input_classroom_id,
 								input_credits, input_time_slot, ins_username);
-	END IF;
+	
 END $$ 
 DELIMITER ;
 
@@ -333,10 +420,13 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE add_prerequisite (IN input_course_id VARCHAR(50), IN input_prerequisite_id VARCHAR(50))  
 BEGIN  
-	INSERT INTO prerequisites VALUES(input_course_id, input_prerequisite_id);
+	IF input_course_id NOT IN (SELECT course_id FROM Courses) OR input_prerequisite_id NOT IN (SELECT course_id FROM Courses)  THEN 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course ID or Prerequisite ID is not valid.';
+    ELSE    
+		INSERT INTO prerequisites VALUES(input_course_id, input_prerequisite_id);
+    END IF;    
 END $$  
 DELIMITER ;
-
 
 -- 14
 
@@ -474,7 +564,7 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You cannot take this course again.';
 	ELSEIF cnt_pre != cnt_join THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You do not meet the prerequisites.';
-	ELSEIF cnt_enrolled >= course_quota THEN  -- just to be sure
+	ELSEIF cnt_enrolled = course_quota THEN  -- just to be sure
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You cannot add the course due to quota restrictions.';
 	ELSE
 		INSERT INTO Added_Courses VALUES(stu_id, input_course_id);
@@ -485,18 +575,80 @@ DELIMITER ;
 
 
 
+-- 20
+
+
+DELIMITER $$  
+CREATE PROCEDURE view_my_courses_stu (IN stu_username VARCHAR(50))  
+BEGIN  
+	DECLARE stu_id VARCHAR(50);
+	SELECT student_id FROM Students WHERE username = stu_username INTO stu_id;
+    
+    SELECT Added_courses.course_id, Courses.name AS course_name, NULL AS grade 
+    FROM Added_courses 
+    INNER JOIN Courses ON Courses.course_id = Added_courses.course_id
+    WHERE Added_courses.student_id = stu_id
+    UNION
+    SELECT Grades.course_id, Courses.name AS course_name, grade 
+    FROM Grades 
+    INNER JOIN Courses ON Courses.course_id = Grades.course_id
+    WHERE Grades.student_id = stu_id;
+    
+END $$  
+DELIMITER ;
+
+
+
+-- 21
+
+
+
+DELIMITER $$  
+CREATE PROCEDURE search_keyword (input_course_name VARCHAR(50))  
+BEGIN  
+	SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
+	Departments.department_name, credits, classroom_id, time_slot, quota,
+    GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
+	FROM ((((Users
+	INNER JOIN Instructors ON Users.username = Instructors.username)
+	INNER JOIN Departments ON Users.department_id = Departments.department_id)
+    INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+    LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
+    WHERE Courses.name LIKE CONCAT('%', input_course_name , '%')
+    GROUP BY Courses.course_id
+    ORDER BY Courses.course_id ASC;
+END $$  
+DELIMITER ; 
+
+
+
+-- 22
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+DELIMITER $$  
+CREATE PROCEDURE filter_course (IN input_dep_id VARCHAR(50), IN input_campus VARCHAR(50),
+IN min_credits INT, IN max_credits INT )  
+BEGIN  
+	IF input_dep_id NOT IN (SELECT department_id FROM Departments) THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department ID is not valid.';
+	ELSE
+		SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
+		Departments.department_name, credits, Courses.classroom_id, time_slot, quota,
+		GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
+		FROM (((((Users
+		INNER JOIN Instructors ON Users.username = Instructors.username)
+		INNER JOIN Departments ON Users.department_id = Departments.department_id)
+		INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+		INNER JOIN Physical_Locations ON Physical_Locations.classroom_id = Courses.classroom_id)
+		LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
+		WHERE campus = input_campus 
+        AND credits>=min_credits 
+        AND credits<=max_credits 
+        AND Departments.department_id = input_dep_id
+		GROUP BY Courses.course_id
+		ORDER BY Courses.course_id ASC;
+	END IF;
+END $$  
+DELIMITER ;

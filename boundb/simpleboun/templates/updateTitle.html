@@ -44,11 +44,12 @@
                     </div>
                 </div>
             </div>
+            &nbsp;
             <div class="container-fluid">
                 {% if action_fail %}
                 <div class="alert alert-danger" role="alert">
-                    <h4 class="alert-heading">Update title failed</h4>
-                    <p>There is no instructor with this id.</p>
+                    <h4 class="alert-heading">Failed</h4>
+                    <p>{{errormessage}}</p>
                 </div>
                 {% endif %}
                 {% if action_success %}
@@ -58,7 +59,7 @@
                 </div>
                 {% endif %}
                 <div class="center">
-                    <form id="postform" class="form-group" method="POST" action="{%url 'deleteStudentWorker' %}">
+                    <form id="postform" class="form-group" method="POST" action="{%url 'updateTitleWorker' %}">
                             {%csrf_token%}
                             <br>
                             <label>Update title of instructor:</label>
