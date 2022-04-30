@@ -334,7 +334,7 @@ BEGIN
 	ELSE
 		SELECT Courses.course_id, Courses.name AS course_name, sum(grade)/count(grade) AS average_grade
 		FROM Courses
-		INNER JOIN Grades ON Grades.course_id = Courses.course_id 
+		LEFT JOIN Grades ON Grades.course_id = Courses.course_id 
 		WHERE Courses.course_id = input_course_id;
 	END IF;
 END $$ 
@@ -407,7 +407,9 @@ BEGIN
 	IF (input_time_slot>=11 OR input_time_slot<=0) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Time slot is not valid.';
 	ELSE
-		SELECT * FROM Physical_Locations WHERE classroom_id NOT IN 
+		SELECT classroom_id, campus, classroom_capacity
+        FROM Physical_Locations
+        WHERE classroom_id NOT IN 
 		(SELECT classroom_id
 		FROM Courses
 		WHERE time_slot = input_time_slot);

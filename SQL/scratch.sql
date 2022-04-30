@@ -1,4 +1,4 @@
-CALL add_dbm ("furkan1", "password");
+/*CALL add_dbm ("furkan1", "password");
 CALL add_dbm ("furkan2", "password");
 CALL add_dbm ("furkan3", "password");
 CALL add_dbm ("furkan4", "password");
@@ -56,7 +56,11 @@ CALL give_grade("crazy ins", "MATH100", "2003", "3");
 CALL give_grade("crazy ins", "MATH101", "2003", "3.5");
 CALL give_grade("crazy ins", "MATH100", "2018", "2.5");
 CALL give_grade("cmpe ins", "CMPE101", "2019", "1.5");
-CALL give_grade("cmpe ins", "CMPE101", "2015", "4");
+CALL give_grade("cmpe ins", "CMPE101", "2015", "4");*/
+
+
+
+
 
 
 

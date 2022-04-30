@@ -99,7 +99,7 @@ def enrollCourseWorker(req):
         isSuccessful=req.GET.get("success",False)
         username=req.session["username"]
         
-        return render(req,'enrollCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'enrollCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def listMyCourses(req):
     username=req.session["username"]
@@ -126,7 +126,7 @@ def searchKeywordWorker(req):
             isFailed=req.GET.get("fail",True)
             return render(req,'searchKeyword.html',{"username":username, "action_fail":isFailed, "results":results})         
     except Exception as e:
-        print(str(e))
+        print(str(e)[8:-2])
         
         return HttpResponseRedirect('../student/searchKeyword?fail=true')
 
@@ -153,7 +153,7 @@ def filterCoursesWorker(req):
             isFailed=req.GET.get("fail",True)
             return render(req,'filterCourses.html',{"username":username, "action_fail":isFailed,"results":results})
     except Exception as e:
-        print(str(e))
+        print(str(e)[8:-2])
    
         return HttpResponseRedirect('../student/filterCourses?fail=true')
 
@@ -178,7 +178,7 @@ def listClassroomsWorker(req):
     except Exception as e:
         isFailed=req.GET.get("fail",True)
 
-        return render(req,'listClassrooms.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)})
+        return render(req,'listClassrooms.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)[8:-2]})
 
 def addCourse(req):
     isFailed=req.GET.get("fail",False)
@@ -202,11 +202,16 @@ def addCourseWorker(req):
         run_statement(f"CALL add_course_ins('{courseid}','{name}','{coursecode}','{quota}','{classroomid}', '{credits}', '{timeslot}','{username}');")
 
         return HttpResponseRedirect('../instructor/addCourse?success=true')
+    except IndexError:
+        isFailed=req.GET.get("fail",True)
+        isSuccessful=req.GET.get("success",False)
+
+        return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": "Please enter a valid course ID."})
     except Exception as e:
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
 
-        return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def addPrerequisite(req):
     isFailed=req.GET.get("fail",False)
@@ -229,7 +234,7 @@ def addPrerequisiteWorker(req):
         isSuccessful=req.GET.get("success",False)
         username=req.session["username"]
 
-        return render(req,'addPrerequisite.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'addPrerequisite.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def viewMyCourses(req):
     username=req.session["username"]
@@ -255,7 +260,7 @@ def listStudentsWorker(req):
     except Exception as e:
         isFailed=req.GET.get("fail",True)
 
-        return render(req,'listStudents.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)})
+        return render(req,'listStudents.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)[8:-2]})
 
 def changeName(req):
     isFailed=req.GET.get("fail",False)
@@ -277,7 +282,7 @@ def changeNameWorker(req):
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
         
-        return render(req,'changeName.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'changeName.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def uploadGrade(req):
     isFailed=req.GET.get("fail",False)
@@ -300,7 +305,7 @@ def uploadGradeWorker(req):
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
 
-        return render(req,'uploadGrade.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'uploadGrade.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def managerHome(req):
     username=req.session["username"]
@@ -314,6 +319,7 @@ def addStudent(req):
     return render(req,'addStudent.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful})
 
 def addStudentWorker(req):
+    session_username = req.session["username"]
     username=req.POST["username"]
     name=req.POST["name"]
     surname=req.POST["surname"]
@@ -324,14 +330,13 @@ def addStudentWorker(req):
 
 
     try:
-        run_statement(f"CALL add_student('{username}','{name}','{surname}','{mail}','{hashlib.sha256(password.encode()).hexdigest()}','{departmentid}', '{studentid}')")
-        #run_statement(f"CALL add_student('{username}','{name}','{surname}','{mail}','{password}','{departmentid}', '{studentid}')")
+        run_statement(f"CALL add_student('{username}','{name}','{surname}','{mail}','{password}','{departmentid}', '{studentid}')")
         return HttpResponseRedirect("../manager/addStudent?success=true")
     except Exception as e:
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
         
-        return render(req,'addStudent.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'addStudent.html',{"username":session_username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def addInstructor(req):
     isFailed=req.GET.get("fail",False)
@@ -340,6 +345,7 @@ def addInstructor(req):
     return render(req,'addInstructor.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful})
 
 def addInstructorWorker(req):
+    session_username = req.session["username"]
     username=req.POST["username"]
     name=req.POST["name"]
     surname=req.POST["surname"]
@@ -349,14 +355,13 @@ def addInstructorWorker(req):
     title=req.POST["title"]
 
     try:
-        run_statement(f"CALL add_ins('{username}','{name}','{surname}','{mail}','{hashlib.sha256(password.encode()).hexdigest()}','{departmentid}', '{title}')")
-        #run_statement(f"CALL add_ins('{username}','{name}','{surname}','{mail}','{password}','{departmentid}', '{title}')")
+        run_statement(f"CALL add_ins('{username}','{name}','{surname}','{mail}','{password}','{departmentid}', '{title}')")
         return HttpResponseRedirect("../manager/addInstructor?success=true")
     except Exception as e:
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
         
-        return render(req,'addInstructor.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'addInstructor.html',{"username":session_username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def deleteStudent(req):
     isFailed=req.GET.get("fail",False)
@@ -376,7 +381,7 @@ def deleteStudentWorker(req):
         isSuccessful=req.GET.get("success",False)
         username=req.session["username"]
         
-        return render(req,'deleteStudent.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'deleteStudent.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def updateTitle(req):
     isFailed=req.GET.get("fail",False)
@@ -398,7 +403,7 @@ def updateTitleWorker(req):
         isSuccessful=req.GET.get("success",False)
         username=req.session["username"]
         
-        return render(req,'updateTitle.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)})
+        return render(req,'updateTitle.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": str(e)[8:-2]})
 
 def viewStudents(req):
     results = run_statement(f"CALL view_students();")
@@ -428,7 +433,7 @@ def viewGradesWorker(req):
         return render(req,'viewGrades.html',{"username":username, "action_fail":isFailed, "results": results}) 
     except Exception as e:
         isFailed=req.GET.get("fail",True)
-        return render(req,'viewGrades.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)})
+        return render(req,'viewGrades.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)[8:-2]})
 
 def viewCourses(req):
     isFailed=req.GET.get("fail",False)
@@ -447,7 +452,7 @@ def viewCoursesWorker(req):
     except Exception as e:
         isFailed=req.GET.get("fail",True)
 
-        return render(req,'viewCourses.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)})
+        return render(req,'viewCourses.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)[8:-2]})
 
 def viewAverage(req):
     isFailed=req.GET.get("fail",False)
@@ -465,4 +470,4 @@ def viewAverageWorker(req):
         return render(req,'viewAverage.html',{"username":username, "action_fail":isFailed, "results": results}) 
     except Exception as e:
         isFailed=req.GET.get("fail",True)
-        return render(req,'viewAverage.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)})
+        return render(req,'viewAverage.html',{"username":username, "action_fail":isFailed, "errormessage": str(e)[8:-2]})
