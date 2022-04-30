@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'boundb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'SimpleBounDB', #case INSENSITIVE
+        'NAME': 'SimpleBounDB',
         'USER': 'root',
         'PASSWORD': 'erk123H', #erk123H
         'HOST': 'localhost',

@@ -15,6 +15,7 @@ INSERT INTO Physical_Locations VALUES("NH103", 20, "South");
 
 CALL add_ins ("crazy ins", "Berke", "Bok", "email", "pass", "MATH", "Professor");
 CALL add_ins ("cmpe ins", "Berke", "Bok", "email", "pas", "CMPE", "Professor");
+CALL add_ins ("math ins", "Berke", "Bok", "email", "pas", "MATH", "Professor");
 
 CALL add_student("denemestu", "Adam", "Bokoglu", "email", "pp", "MATH", "2018");
 CALL add_student("denemestu2", "Ugurcan", "Kaka", "email", "ot", "MATH", "2019");
@@ -57,13 +58,6 @@ CALL give_grade("crazy ins", "MATH101", "2003", "3.5");
 CALL give_grade("crazy ins", "MATH100", "2018", "2.5");
 CALL give_grade("cmpe ins", "CMPE101", "2019", "1.5");
 CALL give_grade("cmpe ins", "CMPE101", "2015", "4");*/
-
-
-
-
-
-
-
 
 
 /* -- DROP PROCEDURE IF EXISTS add_ins;

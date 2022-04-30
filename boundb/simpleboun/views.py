@@ -188,25 +188,28 @@ def addCourse(req):
     return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful})
 
 def addCourseWorker(req):
+    username=req.session["username"]
     courseid=req.POST["courseid"]
     name=req.POST["name"]
-    list1 = re.findall(r'\d+', courseid)
-    coursecode = list1[0]
-    credits=req.POST["credits"]
-    classroomid=req.POST["classroomid"]
-    timeslot=req.POST["timeslot"]
-    quota=req.POST["quota"]
-    username=req.session["username"]
 
-    try:
-        run_statement(f"CALL add_course_ins('{courseid}','{name}','{coursecode}','{quota}','{classroomid}', '{credits}', '{timeslot}','{username}');")
-
-        return HttpResponseRedirect('../instructor/addCourse?success=true')
+    try: 
+        list1 = re.findall(r'\d+', courseid)
+        coursecode = list1[0]
     except IndexError:
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)
 
         return render(req,'addCourse.html',{"username":username, "action_fail":isFailed, "action_success": isSuccessful, "errormessage": "Please enter a valid course ID."})
+
+    credits=req.POST["credits"]
+    classroomid=req.POST["classroomid"]
+    timeslot=req.POST["timeslot"]
+    quota=req.POST["quota"]
+
+    try:
+        run_statement(f"CALL add_course_ins('{courseid}','{name}','{coursecode}','{quota}','{classroomid}', '{credits}', '{timeslot}','{username}');")
+
+        return HttpResponseRedirect('../instructor/addCourse?success=true')
     except Exception as e:
         isFailed=req.GET.get("fail",True)
         isSuccessful=req.GET.get("success",False)

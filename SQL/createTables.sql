@@ -264,10 +264,9 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE view_students ()  
 BEGIN  
-	SELECT Users.username, name, surname, email, department_name, completed_credits, GPA
-	FROM ((Students
+	SELECT Users.username, name, surname, email, department_id, completed_credits, GPA
+	FROM (Students
 	INNER JOIN Users ON Students.username = Users.username)
-	INNER JOIN Departments ON Departments.department_id = Users.department_id)
 	ORDER BY completed_credits ASC;
 END $$  
 DELIMITER ; 
@@ -278,10 +277,9 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE view_instructors ()  
 BEGIN  
-	SELECT Users.username, name, surname, email, department_name, title
-	FROM ((Instructors
-	INNER JOIN Users ON Instructors.username = Users.username)
-	INNER JOIN Departments ON Departments.department_id = Users.department_id);
+	SELECT Users.username, name, surname, email, department_id, title
+	FROM (Instructors
+	INNER JOIN Users ON Instructors.username = Users.username);
 END $$  
 DELIMITER ; 
 
@@ -293,6 +291,8 @@ CREATE PROCEDURE view_student_grades (IN input_student_id VARCHAR(50))
 BEGIN  
 	IF input_student_id NOT IN (SELECT student_id FROM Students) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student ID is not valid.';
+	ELSEIF input_student_id NOT IN (SELECT student_id FROM Grades) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No grades found for this student.';
 	ELSE
 		SELECT Courses.course_id, Courses.name AS course_name , grade
 		FROM ((Grades
@@ -310,8 +310,10 @@ DELIMITER ;
 DELIMITER $$  
 CREATE PROCEDURE view_ins_courses (IN input_ins_username VARCHAR(50))  
 BEGIN  
-	IF input_ins_username NOT IN (SELECT instructor_username FROM Courses) THEN
+	IF input_ins_username NOT IN (SELECT username FROM Instructors) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Instructor username is not valid.';
+	ELSEIF input_ins_username NOT IN (SELECT instructor_username FROM Courses) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No courses found for this instructor.';
 	ELSE
 		SELECT Courses.course_id, Courses.name AS course_name, Physical_Locations.classroom_id, campus, time_slot
 		FROM (Physical_Locations
@@ -480,6 +482,8 @@ CREATE PROCEDURE view_my_students (IN ins_username VARCHAR(50), IN input_course_
 BEGIN  
 	IF input_course_id NOT IN (SELECT course_id FROM Courses WHERE instructor_username = ins_username) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Course ID is not valid.';	-- This course does not belong to you or does not exist.
+	ELSEIF input_course_id NOT IN (SELECT course_id FROM Added_Courses) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No students enrolled in this course.';
 	ELSE
 		SELECT Users.username, Students.student_id, email, Users.name, surname
         FROM (((Users
@@ -540,12 +544,12 @@ DELIMITER $$
 CREATE PROCEDURE view_all_courses ()  
 BEGIN  
 	SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
-	Departments.department_name, credits, classroom_id, time_slot, quota,
+	Departments.department_id, credits, classroom_id, time_slot, quota,
     GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
 	FROM ((((Users
 	INNER JOIN Instructors ON Users.username = Instructors.username)
 	INNER JOIN Departments ON Users.department_id = Departments.department_id)
-    INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+    INNER JOIN Courses ON Courses.instructor_username = Users.username)
     LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
     GROUP BY Courses.course_id
     ORDER BY Courses.course_id ASC;
@@ -633,12 +637,12 @@ DELIMITER $$
 CREATE PROCEDURE search_keyword (input_course_name VARCHAR(50))  
 BEGIN  
 	SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
-	Departments.department_name, credits, classroom_id, time_slot, quota,
+	Departments.department_id, credits, classroom_id, time_slot, quota,
     GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
 	FROM ((((Users
 	INNER JOIN Instructors ON Users.username = Instructors.username)
 	INNER JOIN Departments ON Users.department_id = Departments.department_id)
-    INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+    INNER JOIN Courses ON Courses.instructor_username = Users.username)
     LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
     WHERE Courses.name LIKE CONCAT('%', input_course_name , '%')
     GROUP BY Courses.course_id
@@ -661,12 +665,12 @@ BEGIN
 			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Department ID is not valid.';
 	ELSE
 		SELECT Courses.course_id, Courses.name AS course_name, Users.surname as instructor_surname,
-		Departments.department_name, credits, Courses.classroom_id, time_slot, quota,
+		Departments.department_id, credits, Courses.classroom_id, time_slot, quota,
 		GROUP_CONCAT(prerequisite_id ORDER BY prerequisite_id SEPARATOR ', ') AS prerequisites
 		FROM (((((Users
 		INNER JOIN Instructors ON Users.username = Instructors.username)
 		INNER JOIN Departments ON Users.department_id = Departments.department_id)
-		INNER JOIN Courses ON Courses.department_id = Departments.department_id)
+		INNER JOIN Courses ON Courses.instructor_username = Users.username)
 		INNER JOIN Physical_Locations ON Physical_Locations.classroom_id = Courses.classroom_id)
 		LEFT JOIN Prerequisites ON Courses.course_id = Prerequisites.course_id)
 		WHERE campus = input_campus 
