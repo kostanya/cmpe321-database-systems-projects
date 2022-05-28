@@ -230,6 +230,7 @@ class BplusTree:
                         parentNode = node_.parent
                         for i, item in enumerate(parentNode.values):
                             if item == value_:
+                                print("selam")
                                 p.values[i] = ndashkm_1
                                 break
                     else:
@@ -300,17 +301,22 @@ def printTree(tree):
                 flag = 1
 
 
-record_len = 3
+record_len = 4
 bplustree = BplusTree(record_len)
 bplustree.insert('5', '33')
 bplustree.insert('15', '21')
+bplustree.insert('16', '22')
 bplustree.insert('25', '31')
 bplustree.insert('35', '41')
 bplustree.insert('45', '10')
+node = Node(0)
+printTree(bplustree)
+
+bplustree.delete('45', '10')
 
 printTree(bplustree)
 
-if(bplustree.find('5', '34')):
+if(bplustree.find('5', '33')):
     print("Found")
 else:
     print("Not found")

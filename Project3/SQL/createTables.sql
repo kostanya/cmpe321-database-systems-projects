@@ -102,8 +102,8 @@ CREATE TABLE IF NOT EXISTS Added_Courses
 (student_id VARCHAR(50) NOT NULL,
 course_id VARCHAR(50) NOT NULL,
 PRIMARY KEY (student_id, course_id),
-FOREIGN KEY (student_id) REFERENCES Students(student_id),
-FOREIGN KEY (course_id) REFERENCES Courses(course_id));
+FOREIGN KEY (student_id) REFERENCES Students(student_id) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON UPDATE CASCADE ON DELETE CASCADE);
 
 
 
