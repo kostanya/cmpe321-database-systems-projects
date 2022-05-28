@@ -1,5 +1,7 @@
 import os
 import math
+import re
+import csv
 
 len_recordHeader = 1
 len_pageHeader = 15
@@ -50,9 +52,8 @@ class FileManager:
                     self.createPage(self.fileNames[i], i, k)
 
 
-        # 0,0 
         
-        f = open(self.fileNames[i], 'a+')
+        f = open(self.fileNames[i], 'a')
         f.write("0")
         for field in fields:
             f.write(field.ljust(20))
@@ -62,7 +63,7 @@ class FileManager:
 
 
     def createPage(self, fileName, fileNum, pageNum):
-        f = open(fileName, 'a')
+        f = open(fileName, 'r+')
         f.seek(len_page_bytes*pageNum)
         f.write("$ 0 "+str(pageNum)+" "+str(self.no_records)+" 00 "+str(fileNum)+"\n")
 
@@ -70,8 +71,8 @@ class FileManager:
     def updatePageHeader(self, fileName, fileNum, pageNum, type):
         if type == 0:
             f = open(fileName, 'r+')
-            f.seek(500)
-            f.write("bokadam")
+            f.seek(len_page_bytes*pageNum)
+            f.write("$ 0 "+str(pageNum)+" "+str(self.no_records)+" 01 "+str(fileNum)+"\n")
 
 class Type:
     def __init__(self, name, no_fields, pk_order, fields):
@@ -90,7 +91,7 @@ def createType(name, no_fields, pk_order, fields):
     t = Type(name, no_fields, pk_order, fields)
     types.append(t)
 
-    # add to System catalog
+    write.writerow([name, no_fields, 1, 0])
     # create the b+tree
 
 # name: type-name (str)
@@ -109,6 +110,8 @@ def listType():
     for i in range(len(types)):
         print(types[i].name)
 
+    return types[i].name
+
 # name: type-name (str)
 # fields: a list contains field values
 def createRecord(typeName, fields):
@@ -118,18 +121,46 @@ def createRecord(typeName, fields):
     t = types[index]
 
     rid = t.fileManager.insertRecord(fields)
-
     # insert b+tree with this rid.
+
+def deleteRecord(typeName, pk):
+    #first get rid from b+tree 
+    #then delete from both file and b+tree
+    return
+
+def updateRecord(typeName, pk, fields):
+    #get rid from b+tree 
+    #then change in file 
+    return
+
+def searchRecord(typeName, pk):
+    #get rid from b+tree 
+    #then read fields from file
+    return fields
+    
+def listRecord(typeName):
+    #get all rids from b+tree
+    #then read all fields 
+
+    return fields
+
+def filterRecord(typeName, condition):
+    #get rids which pks hold the condition
+    #then read from file
+    return fields
+
 
 # Take the input and call necessary functions. 
 
-types = [] # use system catalog instead of this
+sc = open('SystemCatalog.csv', 'w')
+write = csv. writer(sc)
+write.writerow(["Type", "Number of Fields", "Number of Files", "Number of Records"])
 
+types =[]
 
 createType("angel", 3, 1, [("name","str"),("alias", "str"),("affiliation","str")])
 createType("evil", 10, 1, [("name", "str"), ("type", "str"), ("alias", "str"), ("spell", "str")])
 createRecord("angel", ["Tyrael", "ArchangelOfJustice", "HighHeavens"])
-
 #deleteType("angel")
 #listType()
 
