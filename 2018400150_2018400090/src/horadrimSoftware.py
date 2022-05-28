@@ -20,7 +20,7 @@ class FileManager:
         s = (len_page_bytes - len_pageHeader) / (len_recordHeader + no_fields*20 + 2)
         self.no_records = math.floor(s)
 
-    def createNewFile():
+    def createNewFile(self, name):
         self.no_file += 1
         fileName = name + str(self.no_file -1) + ".txt"
         self.fileNames.append(fileName)
@@ -57,6 +57,7 @@ class FileManager:
         for field in fields:
             f.write(field.ljust(20))
         f.write("\n")
+        f.close()
         self.updatePageHeader(self.fileNames[i], i, k, 0)
 
 
@@ -68,9 +69,9 @@ class FileManager:
     # type: 0 if inserted a new record 1 if deleted a new record
     def updatePageHeader(self, fileName, fileNum, pageNum, type):
         if type == 0:
-            f = open(fileName, 'a')
-            f.seek(len_page_bytes*pageNum)
-            f.write("$ 0 "+str(pageNum)+" "+str(self.no_records)+" 01 "+str(fileNum)+"\n")
+            f = open(fileName, 'r+')
+            f.seek(500)
+            f.write("bokadam")
 
 class Type:
     def __init__(self, name, no_fields, pk_order, fields):
@@ -131,3 +132,6 @@ createRecord("angel", ["Tyrael", "ArchangelOfJustice", "HighHeavens"])
 
 #deleteType("angel")
 #listType()
+
+size = os.path.getsize('c:/Users/Asus/DBProjects/CMPE321/2018400150_2018400090/src/angel0.txt') 
+print('Size of file is', size, 'bytes')
