@@ -2,6 +2,9 @@ import os
 import math
 import re
 import csv
+from bplustree import *
+
+
 
 len_recordHeader = 1
 len_pageHeader = 15
@@ -22,7 +25,7 @@ class FileManager:
         s = (len_page_bytes - len_pageHeader) / (len_recordHeader + no_fields*20 + 2)
         self.no_records = math.floor(s)
 
-    def createNewFile(self, name):
+    def createExtraFile(self, name):
         self.no_file += 1
         fileName = name + str(self.no_file -1) + ".txt"
         self.fileNames.append(fileName)

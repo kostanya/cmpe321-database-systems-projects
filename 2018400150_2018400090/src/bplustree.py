@@ -343,6 +343,23 @@ class BPlusTree(object):
             node = node.values[0]
         return node
 
+    def traverse(self):
+        left = self.leftmost_leaf()
+        leaves = {}
+        while left.next:
+            for key in left.keys:
+                leaves[key] = left.values[left.index(key)-1]
+            
+            left = left.next
+        
+        for key in left.keys:
+            leaves[key] = left.values[left.index(key)-1]
+
+        return leaves
+        
+
+
+
 
 def demo():
     bplustree = BPlusTree()
@@ -351,6 +368,7 @@ def demo():
         bplustree[i] = 'test' + str(i)
         print('Insert ' + str(i))
         bplustree.show()
+        print(bplustree.traverse())
 
     random.shuffle(random_list)
     for i in random_list:

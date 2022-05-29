@@ -27,3 +27,17 @@ size = os.path.getsize('c:/Users/Asus/DBProjects/CMPE321/2018400150_2018400090/d
 print('Size of file is', size, 'bytes')
 
 
+deneme = [[1,2],[1,4],[1,2,3]]
+
+for i, page in enumerate(deneme):
+    # if page is full
+    if not page:
+        print("asdfasdf")
+        pass
+    else:
+        print(i)
+        print(page)
+        print("bokadam")
+    
+
+
