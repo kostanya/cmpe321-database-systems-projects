@@ -1,0 +1,2 @@
+angel 3 1 name str alias str affiliation str 1
+evil 4 1 name str type str alias str spell str 1

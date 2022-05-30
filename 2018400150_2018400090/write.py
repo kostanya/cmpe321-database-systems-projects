@@ -20,7 +20,7 @@ f.close()
 
 f = open("demofile.txt", "r")
 f.seek(20)
-print(f.read(20))
+print(f.read(0))
 
 # get the size of file
 size = os.path.getsize('c:/Users/Asus/DBProjects/CMPE321/2018400150_2018400090/demofile.txt') 
@@ -38,6 +38,23 @@ for i, page in enumerate(deneme):
         print(i)
         print(page)
         print("bokadam")
+
+
+s = "-1"
+
+k = 3
+
+k = str(k)
+
+print(k)
+
+if len(k) ==  1:
+    k = '0' + k
+
+print(k)
+
+
+
     
 
 

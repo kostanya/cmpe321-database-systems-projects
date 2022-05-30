@@ -356,6 +356,20 @@ class BPlusTree(object):
             leaves[key] = left.values[left.index(key)-1]
 
         return leaves
+
+    def getItems(self):
+        left = self.leftmost_leaf()
+        items = []
+        while left.next:
+            for key in left.keys:
+                items.append(key)
+
+            left = left.next
+        
+        for key in left.keys:
+            items.append(key)
+
+        return items
         
 
 
