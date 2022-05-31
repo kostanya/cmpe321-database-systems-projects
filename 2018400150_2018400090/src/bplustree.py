@@ -346,31 +346,46 @@ class BPlusTree(object):
     def traverse(self):
         left = self.leftmost_leaf()
         leaves = {}
-        while left.next:
+        while left:
             for key in left.keys:
                 leaves[key] = left.values[left.index(key)-1]
             
             left = left.next
         
-        for key in left.keys:
-            leaves[key] = left.values[left.index(key)-1]
-
         return leaves
 
     def getItems(self):
         left = self.leftmost_leaf()
         items = []
-        while left.next:
+        while left:
             for key in left.keys:
                 items.append(key)
 
             left = left.next
         
-        for key in left.keys:
-            items.append(key)
-
         return items
+
+    def getLeft(self, key):
+        left = []
+        items = self.getItems()
+        for i in items:
+            if i < key:
+                left.append(i)
         
+        return left
+
+    
+    def getRight(self, key):
+        right = []
+        items = self.getItems()
+        for i in items:
+            if i > key:
+                right.append(i)
+        print(right)
+        return right
+
+
+
 
 
 
@@ -381,8 +396,9 @@ def demo():
     for i in random_list:
         bplustree[i] = 'test' + str(i)
         print('Insert ' + str(i))
-        bplustree.show()
-        print(bplustree.traverse())
+        #bplustree.show()
+        bplustree.getRight(25)
+        #print(bplustree.traverse())
 
     random.shuffle(random_list)
     for i in random_list:
