@@ -52,12 +52,13 @@ def createType(name, no_fields, pk_order, fieldHeaders, types, btrees):
 
 def deleteType(name, types, btrees):
     # emptying disk memory
-    filename = name + ".txt"
-    if os.path.exists(filename):
-        os.remove(filename)
-        print(filename + " has been deleted successfully")
-    else:
-        print(filename + " does not exist!")
+    files = types[name].files
+    for filename in files:
+        if os.path.exists(filename):
+            os.remove(filename)
+            print(filename + " has been deleted successfully")
+        else:
+            print(filename + " does not exist!")
 
     # deleting the json file that carried information through sessions if it exists
     filename = name + ".json"

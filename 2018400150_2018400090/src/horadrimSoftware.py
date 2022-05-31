@@ -8,10 +8,6 @@ from manipulation import *
 from definition import *
 from parsing import *
 
-len_page_bytes = 256
-no_pages_in_file = 32
-
-
 # always check if systemcatalog exists,
 # if not create
 if os.path.exists("SystemCatalog.txt"):
@@ -29,9 +25,9 @@ btrees = {}
 diskToRam(types)
 
 # loading trees from previous sessions
-loadTrees(btrees)
+loadTrees(btrees, types)
 
-parsing("src/input_1.txt", "output.txt", types, btrees)
+parsing("src/input.txt", "output.txt", types, btrees)
 
 # saving trees for next sessions
 saveTrees(btrees)

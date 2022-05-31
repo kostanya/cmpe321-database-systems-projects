@@ -3,7 +3,7 @@ import os
 len_recordHeader = 1
 len_pageHeader = 13
 len_page_bytes = 256
-no_pages_in_file = 32
+no_pages_in_file = 2
 
 
 class Type:
@@ -13,27 +13,29 @@ class Type:
         self.pk_order = pk_order
         self.fieldHeaders = fieldHeaders
         self.pk_header = fieldHeaders[pk_order-1]
-        self.pages = [] # keeping index of available record spots # keeping page header information to not to scan memory over and over 
-        self.filename = name + ".txt"
+        self.available = [] # keeping index of available record spots # keeping page header information to not to scan memory over and over 
+        self.no_records = [] # number of records per page
+        self.files = []
         self.record_length = (len_recordHeader + no_fields*20 + 2)
         self.residual = (len_page_bytes - len_pageHeader) % self.record_length
-        self.max_records = (len_page_bytes - len_pageHeader) // self.record_length
+        self.max_records_page = (len_page_bytes - len_pageHeader) // self.record_length
+        self.max_records_file = self.max_records_page * no_pages_in_file 
 
     # each type has exactly one base file
     # if the current file gets full then new file should be opened
 
     def findAvailableIndex(self):
         
-        for pageno, index in enumerate(self.pages):
-            # if page is full
-            #print(self.pages)
+        for pageno, index in enumerate(self.available):
+            # careful pageno here is 0 indexed
             if index == -1:
                 pass
             else:
-                
+                dosyadi = self.files[pageno // no_pages_in_file]
+            
                 #search in the corresponding page
-                f = open(self.filename, 'r+')
-                startbyte = len_page_bytes*(pageno)
+                f = open(dosyadi, 'r+')
+                startbyte = len_page_bytes*(pageno % no_pages_in_file)
                 f.seek(startbyte)
                 header = f.read(len_pageHeader)
                 currentrecord = header[3:5]
@@ -43,6 +45,8 @@ class Type:
                 if int(currentrecord) + 1 == int(maxrecord):
                     # after an insertion page will be full
                     currentrecord = int(currentrecord) + 1
+                    self.no_records[pageno] = currentrecord
+
                     currentrecord = str(currentrecord)
                     if len(currentrecord) == 1:
                         currentrecord = '0' + currentrecord
@@ -50,7 +54,7 @@ class Type:
                     f.seek(startbyte+3)
                     f.write(currentrecord)
 
-                    self.pages[pageno] = -1
+                    self.available[pageno] = -1
                     f.seek(startbyte+9)
                     f.write("-1")
                     f.close()
@@ -68,11 +72,13 @@ class Type:
                         else:
 
                             # append new available spot for the page
-                            self.pages[pageno] = index + 1
+                            self.available[pageno] = index + 1
 
                             # update record header for new sessions
 
                             currentrecord = int(currentrecord) + 1
+                            self.no_records[pageno] = currentrecord
+
                             currentrecord = str(currentrecord)
                             if len(currentrecord) == 1:
                                 currentrecord = '0' + currentrecord
@@ -91,16 +97,15 @@ class Type:
                             break
 
 
-                return pageno+1, index
-        
-        if len(self.pages) == no_pages_in_file: # current file is full
-            pass
-            # new file and new page
-        else:
-            f = open(self.filename, 'r+')
-            startbyte = len_page_bytes*(len(self.pages))
+                return pageno // no_pages_in_file + 1, pageno % no_pages_in_file + 1, index
 
-            if len(self.pages) > 0:
+        
+        def createPage(dosyadi):
+            
+            f = open(dosyadi, 'r+')
+            startbyte = len_page_bytes*(len(self.available) % no_pages_in_file)
+
+            if len(self.available) % no_pages_in_file > 0:
                 #filling residual part from the previous page (for visual purposes)
                 f.seek(startbyte-self.residual)
                 f.write(' '*(self.residual-2))
@@ -109,9 +114,9 @@ class Type:
             #creating new page
 
             f.seek(startbyte)
-            pageno = str(len(self.pages) + 1)
+            pageno = str(len(self.available) % no_pages_in_file + 1)
             currentrecord = "01"
-            maxrecord = str(self.max_records)
+            maxrecord = str(self.max_records_page)
             availablerecord = "02"
 
             if len(pageno) == 1:
@@ -125,9 +130,29 @@ class Type:
 
            
             # 1st index will be taken and 2nd index will be the next available spot
-            self.pages.append(2)
+            self.available.append(2)
+            self.no_records.append(1)
             #print(self.pages)
-            return len(self.pages), 1
+            return (len(self.available)-1) // no_pages_in_file + 1, (len(self.available)-1) % no_pages_in_file + 1, 1
+
+        
+        print("++++++++++++++++++++++++")
+        print(len(self.available))
+        # need to open a new file and a new page
+        if len(self.no_records) % no_pages_in_file == 0:
+            newfile = self.name + str(len(self.available) // no_pages_in_file + 1) + ".txt"
+
+            # creating the file as r+ does not create a file if it does not exist
+            f = open(newfile, 'w')
+            f.close()
+
+            self.files.append(newfile)
+            return createPage(newfile)
+
+        # need to open a new page
+        else:
+            dosyadi = self.files[len(self.available) // no_pages_in_file]
+            return createPage(dosyadi)
 
 
 
@@ -144,19 +169,14 @@ class Type:
         # insert only if the pk does not exist in the tree
         if btrees[self.name].query(pk) is None:
 
-            # check if the file was deleted due to (record) deletions
-            if os.path.exists(self.filename):
-                pass
-            else:
-                f = open(self.filename, 'w')
-                f.close()
-    
-
-            f = open(self.filename, 'r+')
-
             address = self.findAvailableIndex()
-            pageno = address[0]
-            index = address[1]
+            fileno = address[0]
+            pageno = address[1]
+            index = address[2]
+
+            dosyadi = self.files[fileno-1]
+
+            f = open(dosyadi, 'r+')
 
             startbyte = len_page_bytes*(pageno-1) + len_pageHeader + self.record_length*(index-1)
             f.seek(startbyte)
@@ -170,7 +190,13 @@ class Type:
             f.close()
 
             # inserting <key, value: closest starting byte to the beginning of the file>
-            btrees[self.name].insert(pk, startbyte)
+            filebytes = len_page_bytes * no_pages_in_file
+            byteaddress = filebytes*(fileno-1) + startbyte
+            btrees[self.name].insert(pk, byteaddress)
+
+            print(self.available)
+            print(self.no_records)
+            print("---------------------------")
             print(self.name + ": record insertü başarılı")
             return True
         else:
@@ -181,10 +207,13 @@ class Type:
 
     #returns page no and record no from byte location
     def getLocation(self, address):
-        pageno = address // len_page_bytes + 1
-        index = (address % len_page_bytes - len_pageHeader) // self.record_length + 1
+        filebytes = len_page_bytes * no_pages_in_file
+        fileno = address // filebytes + 1 
+        offset = address % filebytes
+        pageno = offset // len_page_bytes + 1
+        index = (offset % len_page_bytes - len_pageHeader) // self.record_length + 1
 
-        return pageno, index
+        return fileno, pageno, index
 
     # be careful about page and index --> check if they are 0 indexed or 1 indexed
     def deleteRecord(self, pk, btrees):
@@ -196,10 +225,15 @@ class Type:
         address = btrees[self.name].query(pk) # if does not exist, returns None
         if address:
             location = self.getLocation(address)
-            pageno = location[0]
-            index = location[1]
+            fileno = location[0]
+            pageno = location[1]
+            index = location[2]
 
-            f = open(self.filename, 'r+')
+            print(pk, fileno)
+
+            dosyadi = self.files[fileno-1]
+
+            f = open(dosyadi, 'r+')
 
             startbyte = len_page_bytes*(pageno-1)
             f.seek(startbyte)
@@ -209,6 +243,8 @@ class Type:
 
             
             currentrecord = int(currentrecord) - 1
+            self.no_records[(fileno-1)*no_pages_in_file + pageno-1] = currentrecord
+
             currentrecord = str(currentrecord)
             if len(currentrecord) == 1:
                 currentrecord = '0' + currentrecord
@@ -225,8 +261,8 @@ class Type:
                     index = '0' + index
                 f.write(index)
 
-                # updating pages list 
-                self.pages[pageno-1] = int(index)
+                # updating available list 
+                self.available[(fileno-1)*no_pages_in_file + pageno-1] = int(index)
 
             
             # adding 0 in record header
@@ -239,25 +275,42 @@ class Type:
             # deleting from b+ tree
             btrees[self.name].delete(pk)
 
+            
+            print(self.available)
+            print(self.no_records)
+            print("---------------------------")
+
             # checking if file is empty, if so delete the file
             check = True
-            for i in self.pages:
-                if i != 1:
+            start = (fileno-1) * no_pages_in_file
+            end = min(fileno * no_pages_in_file, len(self.no_records))
+
+            for i in self.no_records[start:end]:
+                if i != 0:
                     check = False
                     break
             
             if check:
                 # emptying pages as well
-                self.pages = []
-                
-                if os.path.exists(self.filename):
-                    os.remove(self.filename)
-                    print(self.filename + " has been deleted successfully")
+                if fileno *  no_pages_in_file > len(self.no_records):
+                    self.no_records[start:end] = [0]*(end-start)
+                    self.available[start:end] = [-1]*(end-start)
+                    self.no_records.extend([0]*(fileno * no_pages_in_file - len(self.no_records)))
+                    self.available.extend([-1]*(fileno * no_pages_in_file - len(self.available)))
                 else:
-                    print(self.filename + " does not exist!")
+                    self.no_records[start:end] = [0]*(end-start)
+                    self.available[start:end] = [-1]*(end-start)
+
+
+                if os.path.exists(dosyadi):
+                    os.remove(dosyadi)
+                    print(dosyadi + " has been deleted successfully")
+                else:
+                    print(dosyadi + " does not exist!")
 
             return True
         else:
+            # pk is not in tree
             return False
 
     # update hatası burada da verilebilir parselarken de 
@@ -272,13 +325,13 @@ class Type:
         address = btrees[self.name].query(pk)
         if address:
             location = self.getLocation(address)
-            pageno = location[0]
-            index = location[1]
+            fileno = location[0]
+            pageno = location[1]
+            index = location[2]
 
-            # veri düzgün ise sırasıyla verilmiştir
-            # fieldları stringify edelim ve tree aracılığıyla gittiğimiz yeri güncelleyelim
+            dosyadi = self.files[fileno-1]
 
-            f = open(self.filename, 'r+')
+            f = open(dosyadi, 'r+')
 
             startbyte = len_page_bytes*(pageno-1) + len_pageHeader + self.record_length*(index-1)
             f.seek(startbyte)
@@ -313,10 +366,14 @@ class Type:
 
         if address:
             location = self.getLocation(address)
-            pageno = location[0]
-            index = location[1]
+            fileno = location[0]
+            pageno = location[1]
+            index = location[2]
 
-            f = open(self.filename, 'r+')
+            dosyadi = self.files[fileno-1]
+
+            f = open(dosyadi, 'r+')
+
             startbyte = len_page_bytes*(pageno-1) + len_pageHeader + self.record_length*(index-1)
             f.seek(startbyte)
             record = f.read(self.record_length-1)[1:] 
