@@ -31,7 +31,7 @@ diskToRam(types)
 # loading trees from previous sessions
 loadTrees(btrees)
 
-parsing("src/input_2.txt", "output.txt", types, btrees)
+parsing("src/input_1.txt", "output.txt", types, btrees)
 
 # saving trees for next sessions
 saveTrees(btrees)

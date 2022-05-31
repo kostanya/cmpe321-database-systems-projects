@@ -44,7 +44,7 @@ def parsing(inputFile, outputFile, types, btrees):
                     if len(parse)-3 == int(type.no_fields):
                         fields = []
                         for i in range(type.no_fields):  
-                            fields.append(parse[3+i])
+                            fields.append(parse[i+3])
 
                         def checkInt(str):
                             if str[0] in ('-', '+'):
@@ -72,7 +72,7 @@ def parsing(inputFile, outputFile, types, btrees):
                         # required number of fields is not equal to entered fields
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])
                 else:
-                    # if given type does not exist
+                    # given type does not exist
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
                 
@@ -82,11 +82,10 @@ def parsing(inputFile, outputFile, types, btrees):
                 typename = parse[2]
 
                 if typename in types.keys():
-                    # call type delete function
                     deleteType(typename, types, btrees)
                     writer.writerow([int(time.time()), line.rstrip(), "success"])
                 else:
-                    # if given type does not exist
+                    # given type does not exist
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
             if parse[1] == "record":
@@ -104,7 +103,7 @@ def parsing(inputFile, outputFile, types, btrees):
                         # pk conflict
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])
                 else:
-                    # if given type does not exist
+                    # given type does not exist
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
         elif parse[0] == "list": 
@@ -115,7 +114,7 @@ def parsing(inputFile, outputFile, types, btrees):
                     output.write(check[0])
                     writer.writerow([int(time.time()), line.rstrip(), "success"])
                 else:
-                    # if list is empty
+                    # list is empty
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
             
 
@@ -129,14 +128,14 @@ def parsing(inputFile, outputFile, types, btrees):
                         output.write(check[0])
                         writer.writerow([int(time.time()), line.rstrip(), "success"])
                     else:
-                        # if there is no record for the given type
+                        # there is no record for the given type
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])
                 else:
-                    # if given type does not exist
+                    # given type does not exist
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
         elif parse[0] == "search":
-            # delete record <type-name><primary-key>
+            # search record <type-name><primary-key>
             typename = parse[2]
             pk = parse[3]
 
@@ -148,10 +147,10 @@ def parsing(inputFile, outputFile, types, btrees):
                     output.write(check[0])
                     writer.writerow([int(time.time()), line.rstrip(), "success"])
                 else:
-                    # if given pk does not exist
+                    # given pk does not exist
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
             else:
-                # if given type does not exist
+                # given type does not exist
                 writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
         elif parse[0] == "update":
@@ -187,13 +186,13 @@ def parsing(inputFile, outputFile, types, btrees):
                         if check:
                             writer.writerow([int(time.time()), line.rstrip(), "success"])
                         else:
-                            # if given pk does not exist
+                            # given pk does not exist
                             writer.writerow([int(time.time()), line.rstrip(), "failure"])
                 else:
                     # required number of fields is not equal to entered fields
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
             else:
-                # if given type does not exist
+                # given type does not exist
                 writer.writerow([int(time.time()), line.rstrip(), "failure"])
 
         elif parse[0] == "filter":   
@@ -216,8 +215,9 @@ def parsing(inputFile, outputFile, types, btrees):
             else:
                 # if given type does not exist
                 writer.writerow([int(time.time()), line.rstrip(), "failure"])
-        
+
         else:
+            # infeasible keyword
             writer.writerow([int(time.time()), line.rstrip(), "failure"]) 
 
 

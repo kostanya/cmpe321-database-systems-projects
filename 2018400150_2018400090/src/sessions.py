@@ -45,7 +45,7 @@ def diskToRam(types):
 
         # assuming line is proper
         fieldHeaders = []
-        for header in words[3::2]:
+        for header in words[3:]:
             fieldHeaders.append(header)
         
         
@@ -54,7 +54,6 @@ def diskToRam(types):
 
     
         # reading the page headers from files 
-        pages = []
         filename = name + ".txt"
         f = open(filename, 'r+')
         byteptr = 9

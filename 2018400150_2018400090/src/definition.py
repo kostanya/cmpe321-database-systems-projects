@@ -11,6 +11,7 @@ def addCatalog(typename, no_fields, pk_order, fieldHeaders):
 
     sc.write(typename + " " + str(no_fields)  + " " + str(pk_order) + command + "\n")
 
+
 def deleteCatalog(name):
     sc = open('SystemCatalog.txt', 'r+')
 
@@ -29,9 +30,9 @@ def deleteCatalog(name):
 
 def createType(name, no_fields, pk_order, fieldHeaders, types, btrees):
     if name not in types.keys():
-        filename = name + ".txt"
-        f = open(filename, 'w')
-        f.close()
+        #filename = name + ".txt"
+        #f = open(filename, 'w')
+        #f.close()
 
         # adding to types dictionary
         types[name] = Type(name, no_fields, pk_order, fieldHeaders)

@@ -40,7 +40,6 @@ class Type:
                 maxrecord = header[6:8]
 
                 
-
                 if int(currentrecord) + 1 == int(maxrecord):
                     # after an insertion page will be full
                     currentrecord = int(currentrecord) + 1
@@ -144,9 +143,17 @@ class Type:
 
         # insert only if the pk does not exist in the tree
         if btrees[self.name].query(pk) is None:
+
+            # check if the file was deleted due to (record) deletions
+            if os.path.exists(self.filename):
+                pass
+            else:
+                f = open(self.filename, 'w')
+                f.close()
+    
+
             f = open(self.filename, 'r+')
 
-            # bunu nereye yazacaz --> file manager
             address = self.findAvailableIndex()
             pageno = address[0]
             index = address[1]
@@ -233,7 +240,6 @@ class Type:
             btrees[self.name].delete(pk)
 
             # checking if file is empty, if so delete the file
-            # remove from the system catalog as well
             check = True
             for i in self.pages:
                 if i != 1:
@@ -241,6 +247,9 @@ class Type:
                     break
             
             if check:
+                # emptying pages as well
+                self.pages = []
+                
                 if os.path.exists(self.filename):
                     os.remove(self.filename)
                     print(self.filename + " has been deleted successfully")
@@ -403,33 +412,6 @@ class Type:
                 return self.listRecord(btrees, pk, -1)
 
                 
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
 
 
     
