@@ -396,8 +396,8 @@ def demo():
     for i in random_list:
         bplustree[i] = 'test' + str(i)
         print('Insert ' + str(i))
-        #bplustree.show()
-        bplustree.getRight(25)
+        bplustree.show()
+        #bplustree.getRight(25)
         #print(bplustree.traverse())
 
     random.shuffle(random_list)

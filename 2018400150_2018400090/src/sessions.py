@@ -24,8 +24,6 @@ def loadTrees(btrees, types):
                 
             
 
-        
-
 def saveTrees(btrees):
     for typename in btrees:
         leaves = btrees[typename].traverse()
@@ -38,7 +36,7 @@ def saveTrees(btrees):
 
 
 
-def diskToRam(types):
+def bufferManager(types):
     catalog = open("SystemCatalog.txt", "r")
     lines = catalog.readlines()
 

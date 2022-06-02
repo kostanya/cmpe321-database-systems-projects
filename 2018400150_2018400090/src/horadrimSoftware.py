@@ -8,7 +8,7 @@ from manipulation import *
 from definition import *
 from parsing import *
 
-# always check if systemcatalog exists,
+# always check if the systemcatalog exists,
 # if not create
 if os.path.exists("SystemCatalog.txt"):
     pass
@@ -21,8 +21,8 @@ else:
 types = {}
 btrees = {}
 
-# reading disk to RAM page by page to get information from previous sessions
-diskToRam(types)
+# reading disk to RAM 
+bufferManager(types)
 
 # loading trees from previous sessions
 loadTrees(btrees, types)

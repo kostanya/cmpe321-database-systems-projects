@@ -12,15 +12,25 @@ create record angel l d d
 create record angel s d d 
 delete record angel a  
 delete record angel d 
+
+
 delete record angel z 
 delete record angel Itherael
+
+
 delete record angel gecici 
 delete record angel x 
 delete record angel q 
+
+
 delete record angel a 
 create record angel x d d 
 create record angel q d d 
 create record angel a d d 
+
+
+
+
 create record angel p d d 
 create record angel l d d 
 create record angel s d d 
@@ -58,12 +68,12 @@ create record angel p d d
 create record angel l d d 
 create record angel s d d 
 create record angel a b c 
-create record angel d e f
+create record angel d e f                       
 create record angel z x y
 delete record angel Itherael
 create record angel gecici d d 
 create record angel x d d 
-create record angel q d d 
+create record angel     q d     d 
 delete record angel x 
 delete record angel p
 delete record angel s 
@@ -72,3 +82,5 @@ delete record angel l
 delete record angel a 
 delete record angel Itherael
 create record angel Itherael G H 
+
+
