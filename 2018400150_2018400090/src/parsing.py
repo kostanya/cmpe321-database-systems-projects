@@ -49,38 +49,23 @@ def parsing(inputFile, outputFile, types, btrees):
                             for i in range(type.no_fields):  
                                 fields.append(parse[i+3])
 
-                            def checkInt(str):
-                                if str[0] in ('-', '+'):
-                                    return str[1:].isdigit()
-                                return str.isdigit()
+                            
+                            check = type.createRecord(fields, btrees)
 
-                            # type - int error
-                            typerror = False
-                            for i, header in enumerate(type.fieldHeaders):
-                                if i%2==1:
-                                    this = parse[(i+1)//2+2]
-                                    if header == 'int' and not checkInt(this):
-                                        writer.writerow([int(time.time()), line.rstrip(), "failure"])
-                                        typerror = True
-                                        break
-                                        
-                            if not typerror:
-                                check = type.createRecord(fields, btrees)
-                                if check:
-                                    writer.writerow([int(time.time()), line.rstrip(), "success"])
-                                else:
-                                    # pk conflict
-                                    writer.writerow([int(time.time()), line.rstrip(), "failure"])
+                            if check:
+                                writer.writerow([int(time.time()), line.rstrip(), "success"])
+                            else:
+                                # pk conflict
+                                writer.writerow([int(time.time()), line.rstrip(), "failure"])
                         else:
                             # required number of fields is not equal to entered fields
                             writer.writerow([int(time.time()), line.rstrip(), "failure"])
                     else:
                         # given type does not exist
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])
-                
+
                 else:
                     writer.writerow([int(time.time()), line.rstrip(), "failure"])
-                    continue
                     
             elif parse[0] == "delete":
                 if parse[1] == "type":
@@ -171,29 +156,14 @@ def parsing(inputFile, outputFile, types, btrees):
                         fields = []
                         for i in range(type.no_fields):  
                             fields.append(parse[i+4])
+                        
+                        check = type.updateRecord(pk, fields, btrees)
 
-                        def checkInt(str):
-                            if str[0] in ('-', '+'):
-                                return str[1:].isdigit()
-                            return str.isdigit()
-
-                        # type - int error
-                        typerror = False
-                        for i, header in enumerate(type.fieldHeaders):
-                            if i%2==1:
-                                this = parse[(i+1)//2+3]
-                                if header == 'int' and not checkInt(this):
-                                    writer.writerow([int(time.time()), line.rstrip(), "failure"])
-                                    typerror = True
-                                    break
-                                        
-                        if not typerror:
-                            check = type.updateRecord(pk, fields, btrees)
-                            if check:
-                                writer.writerow([int(time.time()), line.rstrip(), "success"])
-                            else:
-                                # given pk does not exist
-                                writer.writerow([int(time.time()), line.rstrip(), "failure"])
+                        if check:
+                            writer.writerow([int(time.time()), line.rstrip(), "success"])
+                        else:
+                            # given pk does not exist
+                            writer.writerow([int(time.time()), line.rstrip(), "failure"])
                     else:
                         # required number of fields is not equal to entered fields
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])

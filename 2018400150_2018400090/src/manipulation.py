@@ -2,8 +2,8 @@ import os
 
 len_recordHeader = 1
 len_pageHeader = 13
-len_page_bytes = 256
-no_pages_in_file = 2
+len_page_bytes = 2048
+no_pages_in_file = 8
 
 
 class Type:
@@ -63,16 +63,16 @@ class Type:
                     # searching for the next available spot starting from current available spot + 1
                     
                     byteptr = startbyte + len_pageHeader + index*self.record_length
-                    count = index + 1
+                    newindex = index + 1
                     while True:
                         f.seek(byteptr)
                         if f.read(1) == '1':
                             byteptr += self.record_length
-                            count += 1
+                            newindex += 1
                         else:
 
                             # append new available spot for the page
-                            self.available[pageno] = index + 1
+                            self.available[pageno] = newindex 
 
                             # update record header for new sessions
 
@@ -87,16 +87,16 @@ class Type:
                             f.write(currentrecord)
 
 
-                            count = str(count)
-                            if len(count) == 1:
-                                count = '0' + count
+                            newindex = str(newindex)
+                            if len(newindex) == 1:
+                                newindex = '0' + newindex
 
                             f.seek(startbyte+9)
-                            f.write(count)
+                            f.write(newindex)
                             f.close()
                             break
 
-
+                # returns the address that has just been occupied by the new record         
                 return pageno // no_pages_in_file + 1, pageno % no_pages_in_file + 1, index
 
         
@@ -164,7 +164,10 @@ class Type:
 
         # converting pk from string to int if its type is int
         if self.fieldHeaders[2*self.pk_order-1] == 'int':
-            pk = int(pk)
+            try:
+                pk = int(pk)
+            except:
+                return False
 
         # insert only if the pk does not exist in the tree
         if btrees[self.name].query(pk) is None:
@@ -173,6 +176,8 @@ class Type:
             fileno = address[0]
             pageno = address[1]
             index = address[2]
+
+            print("pk: " + str(pk) + ' ' +  str(index))
 
             dosyadi = self.files[fileno-1]
 
@@ -220,7 +225,10 @@ class Type:
 
         # converting pk from string to int if its type is int
         if self.fieldHeaders[2*self.pk_order-1] == 'int':
-            pk = int(pk)
+            try:
+                pk = int(pk)
+            except:
+                return False
         
         address = btrees[self.name].query(pk) # if does not exist, returns None
         if address:
@@ -320,7 +328,10 @@ class Type:
 
         # converting pk from string to int if its type is int
         if self.fieldHeaders[2*self.pk_order-1] == 'int':
-            pk = int(pk)
+            try:
+                pk = int(pk)
+            except:
+                return False
         
         address = btrees[self.name].query(pk)
         if address:
@@ -356,6 +367,7 @@ class Type:
     # treeden arayıp olup olmadığını bilebiliriz
     # hata bastırmak için tree kullanmak mantıklı (parselarken zor tespit edilecek hatalar için)
     def searchRecord(self, pk, btrees):
+        record = ""
 
         record = ""
 
@@ -393,7 +405,9 @@ class Type:
 
     
     def listRecord(self, btrees, pk = "", mode = 0):
-        
+
+        # converting pk from string to int if its type is int
+
         records = ""
         
         if mode == 0:
@@ -430,7 +444,7 @@ class Type:
 
     # condition = {'<', '>', '='}, key might be on the left
     def filterRecord(self, condition, btrees):
-    
+        
         records = ""
         cond = ""
         lhs = ""
@@ -458,7 +472,6 @@ class Type:
 
         if lhs == self.pk_header and rhs == self.pk_header:
             return records, False
-
 
         if lhs == self.pk_header:
             pk = rhs
