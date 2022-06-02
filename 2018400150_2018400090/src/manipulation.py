@@ -12,7 +12,7 @@ class Type:
         self.no_fields = no_fields
         self.pk_order = pk_order
         self.fieldHeaders = fieldHeaders
-        self.pk_header = fieldHeaders[pk_order-1]
+        self.pk_header = fieldHeaders[2*pk_order-2]
         self.available = [] # keeping index of available record spots # keeping page header information to not to scan memory over and over 
         self.no_records = [] # number of records per page
         self.files = []
@@ -357,11 +357,15 @@ class Type:
     # hata bastırmak için tree kullanmak mantıklı (parselarken zor tespit edilecek hatalar için)
     def searchRecord(self, pk, btrees):
 
+        record = ""
+
         # converting pk from string to int if its type is int
         if self.fieldHeaders[2*self.pk_order-1] == 'int':
-            pk = int(pk)
+            try:
+                pk = int(pk)
+            except:
+                return record, False
         
-        record = ""
         address = btrees[self.name].query(pk)
 
         if address:
@@ -389,19 +393,28 @@ class Type:
 
     
     def listRecord(self, btrees, pk = "", mode = 0):
-
-        # converting pk from string to int if its type is int
-        if self.fieldHeaders[2*self.pk_order-1] == 'int':
-            pk = int(pk)
         
-
         records = ""
         
         if mode == 0:
             pks = btrees[self.name].getItems()
         if mode == -1:
+            # converting pk from string to int if its type is int
+            if self.fieldHeaders[2*self.pk_order-1] == 'int':
+                try:
+                    pk = int(pk)
+                except:
+                    return records, False
+
             pks = btrees[self.name].getLeft(pk)
         if mode == 1:
+            # converting pk from string to int if its type is int
+            if self.fieldHeaders[2*self.pk_order-1] == 'int':
+                try:
+                    pk = int(pk)
+                except:
+                    return records, False
+
             pks = btrees[self.name].getRight(pk)
 
         # if nothing is in tree
@@ -412,6 +425,7 @@ class Type:
                 records += self.searchRecord(pk, btrees)[0]
 
             return records, True
+
 
 
     # condition = {'<', '>', '='}, key might be on the left
@@ -430,6 +444,7 @@ class Type:
             if not ch.isalnum():
                 cond += ch
 
+
         if cond not in ("<", ">", "="):
             return records, False
 
@@ -443,7 +458,6 @@ class Type:
 
         if lhs == self.pk_header and rhs == self.pk_header:
             return records, False
-
 
 
         if lhs == self.pk_header:

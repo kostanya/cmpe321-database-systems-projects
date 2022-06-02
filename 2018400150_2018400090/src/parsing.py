@@ -77,7 +77,10 @@ def parsing(inputFile, outputFile, types, btrees):
                     else:
                         # given type does not exist
                         writer.writerow([int(time.time()), line.rstrip(), "failure"])
-
+                
+                else:
+                    writer.writerow([int(time.time()), line.rstrip(), "failure"])
+                    continue
                     
             elif parse[0] == "delete":
                 if parse[1] == "type":

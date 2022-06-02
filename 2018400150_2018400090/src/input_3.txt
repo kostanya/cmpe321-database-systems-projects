@@ -1,0 +1,12 @@
+delete type dpt
+list type
+create type dpt 2 2 name str index int
+create type dpt 2 2 name str index int
+list record dpt
+delete record dpt 1
+create record dpt cmpe 1
+list type
+list record dpt
+
+create record dpt ee 2
+create record dpt me 3

@@ -1,4 +1,5 @@
 import os
+import sys
 import math
 import csv
 import json
@@ -27,7 +28,9 @@ bufferManager(types)
 # loading trees from previous sessions
 loadTrees(btrees, types)
 
-parsing("src/input.txt", "output.txt", types, btrees)
+input = sys.argv[1]
+output = sys.argv[2]
+parsing(input, output, types, btrees)
 
 # saving trees for next sessions
 saveTrees(btrees)
