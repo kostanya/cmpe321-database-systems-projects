@@ -1,0 +1,144 @@
+delete type dpt
+list type
+create type dpt 2 2 name str index int
+create type dpt 2 2 name str index int
+list record dpt
+delete record dpt 1
+create record dpt cmpe 1
+list type
+list record dpt
+
+create record dpt ee 2
+create record dpt me 3
+create record dpt me 4
+create record dpt che 4
+list record dpt
+
+filter record dpt id<3
+
+list type
+list    record dpt 
+
+create record dpt ie 5
+create record dpt ce 6
+
+delete record dpt 2
+create record dpt psy 7
+
+create record dpt htr 8
+create record dpt tk 9
+create record dpt ee 2
+create record dpt trm 10
+create record dpt pols 11
+
+delete record dpt 2
+
+create record dpt cet 12
+create record dpt ee 2
+create record dpt phsy 13
+create record dpt wll erk
+
+create record dpt wll 14
+
+search record dpt 12
+search record dpt 333
+
+update record dpt 9 tk 24
+
+create record dpt phsy 13
+create record dpt phsy1 133
+create record dpt phsy2 132
+create record dpt phsy3 134
+create record dpt phsy4 135
+create record dpt phsy5 136
+create record dpt phsy6 137
+
+create record dpt phsy1 1331
+create record dpt phsy2 1322
+create record dpt phsy3 1343
+create record dpt phsy4 1354
+create record dpt phsy5 1365
+create record dpt phsy6 1375
+
+
+create record dpt phsy1 13311
+create record dpt phsy2 13222
+create record dpt phsy3 13432
+create record dpt phsy4 13544
+create record dpt phsy5 13655
+create record dpt phsy6 13756
+
+
+create record dpt phsy1 1331
+create record dpt phsy2 13224
+create record dpt phsy3 13434
+create record dpt phsy4 13544
+create record dpt phsy5 13654
+create record dpt phsy6 13754
+
+
+create record dpt phsy1 133111
+create record dpt phsy2 132222
+create record dpt phsy3 134333
+create record dpt phsy4 135444
+create record dpt phsy5 136555
+create record dpt phsy6 1375666
+
+
+create record dpt phsy1 13314443
+create record dpt phsy2 1322355
+create record dpt phsy3 134335
+create record dpt phsy4 1354454
+create record dpt phsy5 1365332
+create record dpt phsy6 13754535
+
+
+create record dpt phsy1 13313523
+create record dpt phsy2 132223545
+create record dpt phsy3 13433254
+create record dpt phsy4 1354345
+create record dpt phsy5 13653453
+create record dpt phsy6 1375453
+
+
+create record dpt phsy1 1331453
+create record dpt phsy2 13223456
+create record dpt phsy3 1343655333
+create record dpt phsy4 135433333
+create record dpt phsy5 13653333
+create record dpt phsy6 13753333
+
+
+create record dpt phsy1 13319
+create record dpt phsy2 13229
+create record dpt phsy3 13439
+create record dpt phsy4 13549
+create record dpt phsy5 13659
+create record dpt phsy6 13759
+
+
+create record dpt phsy1 13318
+create record dpt phsy2 13228
+create record dpt phsy3 13438
+create record dpt phsy4 13548
+create record dpt phsy5 13658
+create record dpt phsy6 13758
+
+
+create record dpt phsy1 13317
+create record dpt phsy2 13227
+create record dpt phsy3 13437
+create record dpt phsy4 13547
+create record dpt phsy5 13657
+create record dpt phsy6 13757
+
+
+create record dpt phsy1 13315
+create record dpt phsy2 13225
+create record dpt phsy3 13435
+create record dpt phsy4 13545
+create record dpt phsy5 13655
+create record dpt phsy6 13755
+
+
+list record dpt

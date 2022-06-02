@@ -1,0 +1,1 @@
+filter record dpt index<52
