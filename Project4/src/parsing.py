@@ -195,3 +195,9 @@ def parsing(inputFile, outputFile, types, btrees):
             else:
                 # infeasible keyword
                 writer.writerow([int(time.time()), line.rstrip(), "failure"]) 
+
+
+
+            
+
+            

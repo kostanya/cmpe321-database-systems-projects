@@ -30,6 +30,10 @@ def deleteCatalog(name):
 
 def createType(name, no_fields, pk_order, fieldHeaders, types, btrees):
     if name not in types.keys():
+        #filename = name + ".txt"
+        #f = open(filename, 'w')
+        #f.close()
+
         # adding to types dictionary
         types[name] = Type(name, no_fields, pk_order, fieldHeaders)
 
@@ -39,8 +43,10 @@ def createType(name, no_fields, pk_order, fieldHeaders, types, btrees):
         # adding to system catalog
         addCatalog(name, no_fields, pk_order, fieldHeaders)
         
+        print("type: " + name + " başarıyla yaratıldı")
         return True
     else:
+        print("zaten bu type var")
         return False
 
 
@@ -50,11 +56,17 @@ def deleteType(name, types, btrees):
     for filename in files:
         if os.path.exists(filename):
             os.remove(filename)
+            print(filename + " has been deleted successfully")
+        else:
+            print(filename + " does not exist!")
 
     # deleting the json file that carried information through sessions if it exists
     filename = name + ".json"
     if os.path.exists(filename):
         os.remove(filename)
+        print(filename + " has been deleted successfully")
+    else:
+        print(filename + " does not exist!")
 
     # deleting the type manager object
     del types[name]
@@ -65,13 +77,14 @@ def deleteType(name, types, btrees):
     # deleting from system catalog
     deleteCatalog(name)
 
+    print("type: " + name + " başarıyla silindi")
+
+
 def listType(types):
     typelist = ""
-    
     if types.keys():
         for type in types.keys():
             typelist += type + '\n'
- 
         return typelist, True
     else:
         return typelist, False

@@ -132,8 +132,12 @@ class Type:
             # 1st index will be taken and 2nd index will be the next available spot
             self.available.append(2)
             self.no_records.append(1)
+            #print(self.pages)
             return (len(self.available)-1) // no_pages_in_file + 1, (len(self.available)-1) % no_pages_in_file + 1, 1
 
+        
+        print("++++++++++++++++++++++++")
+        print(len(self.available))
         # need to open a new file and a new page
         if len(self.no_records) % no_pages_in_file == 0:
             newfile = self.name + str(len(self.available) // no_pages_in_file + 1) + ".txt"
@@ -173,6 +177,8 @@ class Type:
             pageno = address[1]
             index = address[2]
 
+            print("pk: " + str(pk) + ' ' +  str(index))
+
             dosyadi = self.files[fileno-1]
 
             f = open(dosyadi, 'r+')
@@ -193,8 +199,13 @@ class Type:
             byteaddress = filebytes*(fileno-1) + startbyte
             btrees[self.name].insert(pk, byteaddress)
 
+            print(self.available)
+            print(self.no_records)
+            print("---------------------------")
+            print(self.name + ": record insertü başarılı")
             return True
         else:
+            print(self.name + ": bu pk zaten var amcık seni")
             return False
 
 
@@ -225,6 +236,8 @@ class Type:
             fileno = location[0]
             pageno = location[1]
             index = location[2]
+
+            print(pk, fileno)
 
             dosyadi = self.files[fileno-1]
 
@@ -270,6 +283,11 @@ class Type:
             # deleting from b+ tree
             btrees[self.name].delete(pk)
 
+            
+            print(self.available)
+            print(self.no_records)
+            print("---------------------------")
+
             # checking if file is empty, if so delete the file
             check = True
             start = (fileno-1) * no_pages_in_file
@@ -294,12 +312,18 @@ class Type:
 
                 if os.path.exists(dosyadi):
                     os.remove(dosyadi)
+                    print(dosyadi + " has been deleted successfully")
+                else:
+                    print(dosyadi + " does not exist!")
 
             return True
         else:
             # pk is not in tree
             return False
 
+    # update hatası burada da verilebilir parselarken de 
+    # hangisi kolaysa ona göre implementasyon
+    # delete ve create için de geçerli bu durum
     def updateRecord(self, pk, fields, btrees):
 
         # converting pk from string to int if its type is int
@@ -329,7 +353,8 @@ class Type:
 
             f.write("\n")
             f.close()
-            
+
+            print(self.name + ": record updatei başarılı")
             return True
         else:
             return False
@@ -339,6 +364,8 @@ class Type:
     # if the output of the operation is empty, it must be considered as failure
     # and logged accordingly.
 
+    # treeden arayıp olup olmadığını bilebiliriz
+    # hata bastırmak için tree kullanmak mantıklı (parselarken zor tespit edilecek hatalar için)
     def searchRecord(self, pk, btrees):
         record = ""
 
@@ -378,6 +405,8 @@ class Type:
 
     
     def listRecord(self, btrees, pk = "", mode = 0):
+
+        # converting pk from string to int if its type is int
 
         records = ""
         

@@ -316,7 +316,8 @@ class BPlusTree(object):
         """Prints the keys at each level."""
         if node is None:
             node = self.root
-
+        print(_prefix, "`- " if _last else "|- ", node.keys, sep="", file=file)
+        _prefix += "   " if _last else "|  "
 
         if type(node) is Node:
             # Recursively print the key of child nodes (if these exist).
@@ -380,4 +381,32 @@ class BPlusTree(object):
         for i in items:
             if i > key:
                 right.append(i)
+        print(right)
         return right
+
+
+
+
+
+
+
+def demo():
+    bplustree = BPlusTree()
+    random_list = random.sample(range(1, 100), 20)
+    for i in random_list:
+        bplustree[i] = 'test' + str(i)
+        print('Insert ' + str(i))
+        bplustree.show()
+        #bplustree.getRight(25)
+        #print(bplustree.traverse())
+
+    random.shuffle(random_list)
+    for i in random_list:
+        print('Delete ' + str(i))
+        bplustree.delete(i)
+        bplustree.show()
+
+
+if __name__ == '__main__':
+    demo()
+    

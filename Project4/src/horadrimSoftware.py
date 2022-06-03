@@ -18,6 +18,7 @@ else:
     f = open("SystemCatalog.txt", 'w')
     f.close()
 
+
 # storing objects and trees for types created so far
 types = {}
 btrees = {}
